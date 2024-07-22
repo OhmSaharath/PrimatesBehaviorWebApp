@@ -1,0 +1,11 @@
+{% extends  'base_auth.html' %}
+{% load crispy_forms_tags %}{% block main %}
+<div class="card">
+<div class="card-body">
+    <h4  class="card-title"> Sign up new account</h4><form  method="post">
+        {% csrf_token %}
+        {{ form|crispy }}<button  type="submit"  class="btn btn-success">Sign up </button>
+        </form>
+</div>
+</div>
+{% endblock %}

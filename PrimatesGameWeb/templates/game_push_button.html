@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Page</title>
+
+    <!-- Load favicon -->
+    <link
+    rel="shortcut icon"
+    type="image/png"
+    href="{% static 'img/favicon.ico' %}"
+    />
+    <!-- Include your CSS files here -->
+    <link
+      rel="preload"
+      as="style"
+      href="{% static 'css/game_push_button.css' %}"
+      onload="this.rel = 'stylesheet'"
+    />
+
+</head>
+<body>
+    <div id="signalButton" class="circle"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const button = document.getElementById('signalButton');
+            const gameInstanceId = getGameInstanceIdFromURL();
+            
+            button.addEventListener('mousedown', function () {
+                    sendSignal('press', gameInstanceId); // Call the function to send signal
+                    button.classList.add('pressed'); // Add the 'pressed' class
+            });
+            
+            button.addEventListener('mouseup', function () {
+                sendSignal('release', gameInstanceId); // Call the function to send signal for release event
+                button.classList.remove('pressed'); // Remove the 'pressed' class
+            });
+            
+            button.addEventListener('mouseleave', function () {
+                sendSignal('release', gameInstanceId); // Call the function to send signal for release event
+                button.classList.remove('pressed'); // Remove the 'pressed' class
+            });
+            
+            function getGameInstanceIdFromURL() {
+                // Extract gameInstanceId from current URL
+                const pathParts = window.location.pathname.split('/');
+                return parseInt(pathParts[pathParts.length - 1]); // Assuming the gameInstanceId is the last part of the URL path
+            }
+
+
+
+            function sendSignal(eventType, gameInstanceId) {
+                // Use AJAX to send signal to Django backend
+                const xhr = new XMLHttpRequest();
+                const url = '{% url "webapp:handle-signal" gameinstance=0 %}'.replace('0', gameInstanceId) + '?event=' + eventType
+                xhr.open('GET',url , true); 
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        console.log('Signal sent successfully');
+                    } else {
+                        console.error('Error sending signal');
+                    }
+                };
+                xhr.send();
+            }
+        });
+    </script>
+</body>
+</html>

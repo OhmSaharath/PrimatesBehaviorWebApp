@@ -1,0 +1,36 @@
+{% load static %}
+<header>
+  <img class ="img_header" src="{% static 'img/monkey_hug_banana.jpg' %}" />
+</header>
+<nav>
+  <ul>
+    <li><a href="{% url 'webapp:home' %}">Home</a></li>
+    <li><a href="{% url 'webapp:start-game' %}">Start Experiment</a></li>
+    {% if user.is_authenticated %}
+     <li class="authennav"><a href="#" onclick="submitForm()">Logout</a></li>
+      <li class="authennav"><a href="/">{{ user.username }}</a></li>
+    {% else %}
+      <li class="authennav"><a href="{% url 'authen:login' %}">Login</a></li>
+    {% endif %}
+    
+  </ul>
+</nav>
+
+<!-- JavaScript function to submit form via POST -->
+<script>
+  function submitForm() {
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = "{% url 'authen:logout' %}"; // Set your desired endpoint URL here
+  
+     // Add CSRF token field
+    var csrfToken = document.createElement('input');
+    csrfToken.type = 'hidden';
+    csrfToken.name = 'csrfmiddlewaretoken';
+    csrfToken.value = '{{ csrf_token }}'; // Django template tag to get the CSRF token
+    form.appendChild(csrfToken);
+  
+    document.body.appendChild(form);
+    form.submit();
+  }
+  </script>

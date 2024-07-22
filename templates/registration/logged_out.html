@@ -1,0 +1,4 @@
+{% extends 'base_auth.html' %}
+{% block main %}<p>You are logged out!</p>
+<a  href="{% url 'authen:login' %}">Log in again</a> <br>
+<a  href="/">Home</a>{% endblock %}
