@@ -43,4 +43,4 @@ class GamesSerializer(serializers.ModelSerializer):
 class GamesInstancesSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameInstances
-        fields = ['id','game' , 'rpiboard' , 'login_hist' , 'primate', 'login_hist' , 'logout_hist']
+        fields = '__all__'

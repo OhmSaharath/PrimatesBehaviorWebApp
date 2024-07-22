@@ -26,15 +26,32 @@ class Primates(models.Model):
     def __str__(self)-> str:
 	    return self.name
     
-    
+
 class Games(models.Model):
     name = models.CharField(max_length=255)
     def __str__(self)-> str:
 	    return self.name
 
+
+class GameConfig(models.Model):
+    name = models.CharField(max_length=255)
+    gameid = models.ForeignKey(Games,on_delete=models.CASCADE)
+    def __str__(self)-> str:
+	    return self.name
+
+
 class GameInstances(models.Model):
     game = models.ForeignKey(Games, on_delete=models.PROTECT)
+    config = models.ForeignKey(GameConfig, on_delete=models.PROTECT, related_name="gameconfig")
     rpiboard = models.ForeignKey(RPiBoards, on_delete=models.PROTECT , related_name="rpiboard")
     primate = models.ForeignKey(Primates, on_delete=models.PROTECT , related_name="primate")
     login_hist = models.DateTimeField()
     logout_hist = models.DateTimeField(blank=True , null=True)
+
+
+class FixationGameConfig(models.Model):
+    configtype = models.ForeignKey(GameConfig, on_delete=models.PROTECT)
+    instance = models.OneToOneField(GameInstances, on_delete=models.CASCADE,related_name="gameinstance")
+    interval_correct = models.IntegerField()
+    interval_incorrect = models.IntegerField()
+    interval_absent = models.IntegerField()

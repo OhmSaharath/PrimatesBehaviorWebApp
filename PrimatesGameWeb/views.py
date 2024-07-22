@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 import requests
-from PrimatesGameAPI.models import RPiBoards , Primates , Games , RPiStates , GameInstances
+from PrimatesGameAPI.models import RPiBoards , Primates , Games , RPiStates , GameInstances , GameConfig
 from django.contrib import messages
 from datetime import datetime
 from PrimatesGameAPI import views as APIviews
@@ -46,6 +46,17 @@ def primates(request):
 
 
 def start_game(request):
+
+    def get_config_id(game_id):
+        try:
+            # Using get() to retrieve a single object
+            config = GameConfig.objects.get(gameid=game_id)
+            config_id = config.id
+        except GameConfig.DoesNotExist:
+            config_id = None
+        
+        return config_id
+    
     if request.method == 'POST':
         form = StartGameForm(request.POST)
         if form.is_valid():
@@ -61,14 +72,22 @@ def start_game(request):
             rpiboard = form.cleaned_data['rpi_name']
             primate = form.cleaned_data['primate_name']
             game = form.cleaned_data['game_name']
-            
+            config = get_config_id(game)
+
+            if config == None:
+                raise Http404("Configuration does not exist")
+            else:
+                pass
+
             
             data = {
                'rpiboard': rpiboard,
                 'primate': primate,
                 'game': game,
+                'config' : config,
                 'login_hist' : str(datetime.now())
             }
+            print(data)
             # Set up the request headers with the token
             headers = {
                 'Authorization': f'Token {token}',
