@@ -1,0 +1,4 @@
+Superuser
+    username : admin
+    password : @dmin1234
+    token : dc7389e43329875a67f36562ce5c31603016ab1e

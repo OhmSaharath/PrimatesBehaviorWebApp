@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/',include('djoser.urls.authtoken')),
     path('accounts/', include('PrimatesGameAccount.urls')),
     path('', include('PrimatesGameWeb.urls')),
+    path('game/', include('PrimatesGame_FixationTask.urls')),
 ]

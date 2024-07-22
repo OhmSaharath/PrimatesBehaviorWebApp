@@ -34,7 +34,7 @@ class StartGameForm(forms.Form):
         super(StartGameForm, self).__init__(*args, **kwargs)
         if rpi_name_list and primate_name_list and game_name_list:
             self.fields['rpi_name'] = forms.ChoiceField(choices=rpi_choices)
-            self.fields['primal_name'] = forms.ChoiceField(choices=primate_choices)
+            self.fields['primate_name'] = forms.ChoiceField(choices=primate_choices)
             self.fields['game_name'] = forms.ChoiceField(choices=game_choices)
             
             
@@ -49,6 +49,6 @@ class StartGameForm(forms.Form):
         )
     game_name = forms.ChoiceField(validators=[validate_choice])
     rpi_name = forms.ChoiceField( validators=[validate_choice])
-    primal_name  = forms.ChoiceField(validators=[validate_choice])
+    primate_name  = forms.ChoiceField(validators=[validate_choice])
     
     
