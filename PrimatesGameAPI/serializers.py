@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from .models import RPiBoards, RPiStates, Primates, Games, GameInstances
+from .models import RPiBoards, RPiStates, Primates, Games, GameInstances ,GameConfig, FixationGameConfig , Reports , FixationGameReport , FixationGameResult
 from django.contrib.auth.models import User , Group
 
 class GroupSerializer(serializers.ModelSerializer):    
@@ -43,4 +43,30 @@ class GamesSerializer(serializers.ModelSerializer):
 class GamesInstancesSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameInstances
+        fields = '__all__'
+
+class GameConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GameConfig
+        fields = '__all__'
+
+class FixationGameConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FixationGameConfig
+        fields = '__all__'
+
+class ReportsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reports
+        fields = '__all__'
+        
+class FixationGameReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FixationGameReport
+        fields = '__all__'
+
+
+class FixationGameResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FixationGameResult
         fields = '__all__'

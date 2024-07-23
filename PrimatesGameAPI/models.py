@@ -51,7 +51,22 @@ class GameInstances(models.Model):
 
 class FixationGameConfig(models.Model):
     configtype = models.ForeignKey(GameConfig, on_delete=models.PROTECT)
-    instance = models.OneToOneField(GameInstances, on_delete=models.CASCADE,related_name="gameinstance")
+    instance = models.OneToOneField(GameInstances, on_delete=models.CASCADE,related_name="fixationgameinstance")
     interval_correct = models.IntegerField()
     interval_incorrect = models.IntegerField()
     interval_absent = models.IntegerField()
+
+class Reports(models.Model):
+    reportname =  models.CharField(max_length=50)
+    game = models.ForeignKey(Games, on_delete=models.PROTECT)
+
+class FixationGameReport(models.Model):
+    report = models.ForeignKey(Reports, on_delete=models.PROTECT)
+    instance = models.OneToOneField(GameInstances, on_delete=models.PROTECT,related_name="fixationreportgameinstance")
+    
+class FixationGameResult(models.Model):
+    fixationreport = models.ForeignKey(FixationGameReport, on_delete=models.PROTECT)
+    timestamp = models.DateTimeField()
+    feedback = models.BooleanField()
+    feedbacktype = models.CharField(max_length=10)
+    
