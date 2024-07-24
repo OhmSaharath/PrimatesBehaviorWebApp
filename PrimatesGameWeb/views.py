@@ -87,7 +87,7 @@ def start_game(request):
                 'config' : config,
                 'login_hist' : str(datetime.now())
             }
-            print(data)
+            #print(data)
             # Set up the request headers with the token
             headers = {
                 'Authorization': f'Token {token}',
@@ -102,13 +102,37 @@ def start_game(request):
             
             if response.status_code == 201:
                 
-                # User is alreay authenthecated, we can now edit the model directly
-                
-                # Gameinstance create successful
-                # send a signal to start a game on target RPI board
-                
+                # Initialize game configuration
+                #print(response.json())
                 # Access the ID of the newly created instance from the response
                 game_instance_id = response.json().get('id')
+                game_configtype_id = response.json().get('config')
+                
+                data = {
+               'configtype': game_configtype_id,
+                'instance': game_instance_id,
+                'interval_correct': 2,
+                'interval_incorrect' : 5,
+                'interval_absent' : 60
+                }
+                
+                # POST to /api/games-instances
+                url = request.build_absolute_uri(reverse('api:fixationconfigs'))
+                print(url)
+                
+                response = requests.post(url, json=data, headers=headers)
+                if response.status_code == 201:
+                    pass
+                elif response.status_code == 401:
+                    return JsonResponse({'errors': 'Unauthorized'})
+                else:
+                    print(response)
+                    return JsonResponse({'errors': 'something wrong'})
+                # User is alreay authenthecated, we can now edit the model directly
+                
+                # Gameinstance created successful
+                # GameConFiguration for that instance created successful
+                # send a signal to start a game on target RPI board
                 
                 # get the state of the target RPI board
                 # Replace `pk_value` with the actual primary key value you want to retrieve

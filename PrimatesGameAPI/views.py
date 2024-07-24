@@ -1,13 +1,13 @@
 
 from django.shortcuts import render
 from rest_framework import generics
-from .models import Primates , RPiBoards , RPiStates , Games , GameInstances
+from .models import RPiBoards, RPiStates, Primates, Games, GameInstances ,GameConfig, FixationGameConfig , Reports , FixationGameReport , FixationGameResult
 from .permissions import IsResearcher , IsRPiClient , IsAdmin ,  IsResearcherOrAdmin 
 from rest_framework.permissions import IsAuthenticated , AllowAny 
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User, Group
-from .serializers import PrimatesSerializer , UserSerializer , UserNamePOSTSerializer , RPiBoardsSerializer , RPiStatesSerializer , GamesSerializer , GamesInstancesSerializer
+from .serializers import PrimatesSerializer , UserSerializer , UserNamePOSTSerializer , RPiBoardsSerializer , RPiStatesSerializer , GamesSerializer , GamesInstancesSerializer, GameConfigSerializer, FixationGameConfigSerializer, ReportsSerializer, FixationGameReportSerializer, FixationGameResultSerializer
 
 # Create your views here.
 
@@ -97,6 +97,15 @@ class SingleGameInstanceView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GamesInstancesSerializer
     permission_classes = (IsAuthenticated|IsAdmin|IsResearcher|IsRPiClient,)
     
+class FixationGameConfigView(generics.ListCreateAPIView):
+    queryset = FixationGameConfig.objects.all()
+    serializer_class = FixationGameConfigSerializer
+    permission_classes = (IsAuthenticated|IsAdmin|IsResearcher,)
+    
+class SingleFixationGameConfigView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FixationGameConfig.objects.all()
+    serializer_class = FixationGameConfigSerializer
+    permission_classes = (IsAuthenticated|IsAdmin|IsResearcher,)
     
 
 
