@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", function() {
         interval_absent: 60  // Default wait time for absent click
     };
 
+    
+    let inactivityTimer = null; // Variable to convert state of inactivity back to original
+    let actionBlocked = false;   // Flag to track if actions are blocked
+
     // Fetch game configuration
     const configUrl = configUrlTemplate.replace('0', gameInstanceId);
     fetch(configUrl)
@@ -23,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (data) {
                 config = data;
             }
+            resetInactivityTimer();  // Start the inactivity timer after config is fetched
         })
         .catch(error => console.error('Error fetching config:', error));
 
@@ -30,10 +35,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     
     button.onclick = function(event) {
+        if (actionBlocked) return;  // Prevent action if blocked
         console.log('correct')
         event.stopPropagation();  // Prevent the background click event from firing
         button.style.backgroundColor = 'green';
-
+        actionBlocked = true;  // Block further actions
         // Activate the pump
         sendSignal(gameInstanceId); // Call the function to send signal
 
@@ -41,17 +47,23 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log('waitfor'+config.interval_correct+'second')
         setTimeout(() => {
             button.style.backgroundColor = 'yellow';
+            actionBlocked = false;  // Allow actions again after button reverts to yellow
+            resetInactivityTimer();  // Start the inactivity timer after config is fetched
         }, config.interval_correct * 1000);  // Convert seconds to milliseconds
     };
 
     document.body.onclick = function() {
+        if (actionBlocked) return;  // Prevent action if blocked
         button.style.backgroundColor = 'red';
+        actionBlocked = true;  // Block further actions 
         console.log('incorrect')
         console.log('waitfor'+config.interval_incorrect+'second')
 
         // wait for "interval_incorrect" second then convert back to yellow
         setTimeout(() => {
             button.style.backgroundColor = 'yellow';
+            actionBlocked = false;  // Allow actions again after button reverts to yellow
+            resetInactivityTimer();  // Start the inactivity timer after config is fetched
         }, config.interval_incorrect * 1000);  // Convert seconds to milliseconds
     };
 
@@ -76,6 +88,22 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         };
         xhr.send();
+    }
+
+    function resetInactivityTimer() {
+        if (inactivityTimer) {
+            clearTimeout(inactivityTimer);
+        }
+        inactivityTimer = setTimeout(() => {
+            console.log('no activity detected')
+            button.style.backgroundColor = 'red';
+            actionBlocked = true;  // Block actions during inactivity
+            setTimeout(() => {
+                button.style.backgroundColor = 'yellow';
+                actionBlocked = false;  // Allow actions again after button reverts to yellow
+                resetInactivityTimer();  // Restart the inactivity timer after button reverts to yellow
+            }, config.interval_incorrect * 1000);
+        }, config.interval_absent * 1000);
     }
 
     gameContainer.appendChild(button);
