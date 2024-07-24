@@ -2,7 +2,7 @@ from django.shortcuts import render
 from PrimatesGameAPI.models import RPiBoards, RPiStates, Primates, Games, GameInstances ,GameConfig, FixationGameConfig , Reports , FixationGameReport , FixationGameResult
 from django.http import Http404
 from django.http import HttpRequest , HttpResponse
-
+from django.http import JsonResponse
 # Create your views here
 def game_view(request, gameinstance):
     try:
@@ -42,3 +42,24 @@ def fixationtask_signal_response(request, gameinstance):
         
     except GameInstances.DoesNotExist:
         raise Http404("No GameInstances matches the given query.")
+
+def get_game_config(request,gameinstance):
+    try:
+        game_instance = GameInstances.objects.get(id=gameinstance)
+        config = FixationGameConfig.objects.get(instance=game_instance)
+        if config:
+            return JsonResponse({
+                'interval_correct': config.interval_correct,
+                'interval_incorrect': config.interval_incorrect,
+                'interval_absent': config.interval_absent,
+            })
+        else:
+            return JsonResponse({
+                'interval_correct': 2,
+                'interval_incorrect': 5,
+                'interval_absent': 60
+            })  # Default values if no config is found
+    except GameInstances.DoesNotExist:
+        return JsonResponse({'error': 'Game instance not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

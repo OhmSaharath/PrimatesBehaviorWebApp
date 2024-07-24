@@ -1,19 +1,58 @@
 document.addEventListener("DOMContentLoaded", function() {
     
+    // Parameter Initialization
+
     const gameContainer = document.getElementById('game-container');
     const signalUrlTemplate = gameContainer.getAttribute('data-signal-url');
+    const configUrlTemplate = gameContainer.getAttribute('data-config-url');
     
     const button = document.createElement('button');
     const gameInstanceId = getGameInstanceIdFromURL();
+
+    let config = {
+        interval_correct: 2,  // Default wait time for correct click
+        interval_incorrect: 5,  // Default wait time for incorrect click
+        interval_absent: 60  // Default wait time for absent click
+    };
+
+    // Fetch game configuration
+    const configUrl = configUrlTemplate.replace('0', gameInstanceId);
+    fetch(configUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data) {
+                config = data;
+            }
+        })
+        .catch(error => console.error('Error fetching config:', error));
+
+
+
     
-    button.onclick = function() {
+    button.onclick = function(event) {
+        console.log('correct')
         event.stopPropagation();  // Prevent the background click event from firing
         button.style.backgroundColor = 'green';
+
+        // Activate the pump
         sendSignal(gameInstanceId); // Call the function to send signal
+
+        // wait for "interval_correct" second then convert back to yellow
+        console.log('waitfor'+config.interval_correct+'second')
+        setTimeout(() => {
+            button.style.backgroundColor = 'yellow';
+        }, config.interval_correct * 1000);  // Convert seconds to milliseconds
     };
 
     document.body.onclick = function() {
         button.style.backgroundColor = 'red';
+        console.log('incorrect')
+        console.log('waitfor'+config.interval_incorrect+'second')
+
+        // wait for "interval_incorrect" second then convert back to yellow
+        setTimeout(() => {
+            button.style.backgroundColor = 'yellow';
+        }, config.interval_incorrect * 1000);  // Convert seconds to milliseconds
     };
 
     function getGameInstanceIdFromURL() {
