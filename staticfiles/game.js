@@ -3,17 +3,13 @@ document.addEventListener("DOMContentLoaded", function() {
     const gameContainer = document.getElementById('game-container');
     const signalUrlTemplate = gameContainer.getAttribute('data-signal-url');
     
-    const button = document.createElement('button');
+    const button = document.createElement('green');
     const gameInstanceId = getGameInstanceIdFromURL();
     
     button.onclick = function() {
-        event.stopPropagation();  // Prevent the background click event from firing
-        button.style.backgroundColor = 'green';
+        console.log('hello')
+        //utton.style.backgroundColor = 'blue';
         sendSignal(gameInstanceId); // Call the function to send signal
-    };
-
-    document.body.onclick = function() {
-        button.style.backgroundColor = 'red';
     };
 
     function getGameInstanceIdFromURL() {

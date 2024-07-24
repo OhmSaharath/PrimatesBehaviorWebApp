@@ -9,6 +9,6 @@
     <link rel="stylesheet" href="{% static 'css/game.css' %}">
 </head>
 <body>
-    <div id="game-container"></div>
+    <div id="game-container" data-signal-url="{% url 'fixation_game:signalresponse' gameinstance=0 %}"></div>
 </body>
 </html>
