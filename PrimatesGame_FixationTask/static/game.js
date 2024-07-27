@@ -5,15 +5,22 @@ document.addEventListener("DOMContentLoaded", function() {
     const gameContainer = document.getElementById('game-container');
     const signalUrlTemplate = gameContainer.getAttribute('data-signal-url');
     const configUrlTemplate = gameContainer.getAttribute('data-config-url');
+    const gameInstanceId = getGameInstanceIdFromURL();
     
     const button = document.createElement('button');
-    const gameInstanceId = getGameInstanceIdFromURL();
-
-
     let buttonSize = 95;  // Initial size percentage of the button
-    updateButtonSize(buttonSize);
+    const minButtonSizePx = 50;  // Minimum button size in pixels (0.5 cm = 50 pixels)
+    const minClickAreaPx = 200;  // Minimum click area size in pixels (2 cm = 200 pixels), special case when button is less than 2cmx2cm
+    
     button.style.position = 'absolute';  // Allow positioning the button absolutely
 
+    // Create an overlay for handling the special click area
+    const overlay = document.createElement('div');
+    overlay.style.position = 'absolute';
+    overlay.style.backgroundColor = 'transparent';  // Make the overlay invisible
+    overlay.style.pointerEvents = 'auto';  // Ignore pointer events initially
+
+    updateButtonSize(buttonSize); // initialize button
 
 
     let config = {
@@ -42,8 +49,8 @@ document.addEventListener("DOMContentLoaded", function() {
         .catch(error => console.error('Error fetching config:', error));
 
 
-
     
+    // buttonclick
     button.onclick = function(event) {
         if (actionBlocked) return;  // Prevent action if blocked
         console.log('correct')
@@ -65,6 +72,21 @@ document.addEventListener("DOMContentLoaded", function() {
         }, config.interval_correct * 1000);  // Convert seconds to milliseconds
     };
 
+    // Special case, tolerance window
+    overlay.onclick = function(event) {
+        if (actionBlocked) return;  // Prevent action if blocked
+        event.stopPropagation();  // Prevent the background click event from firing
+        updateButtonColorAndTrials('green');
+        sendSignal(gameInstanceId); // Call the function to send signal
+
+        setTimeout(() => {
+            button.style.backgroundColor = 'yellow';
+            actionBlocked = false;  // Allow actions again after button reverts to yellow
+            resetInactivityTimer();  // Reset inactivity timer after button reverts to yellow
+        }, config.interval_correct * 1000);  // Convert seconds to milliseconds
+    };
+
+    // Incorrect case, background click
     document.body.onclick = function() {
         if (actionBlocked) return;  // Prevent action if blocked
         console.log('incorrect')
@@ -105,9 +127,6 @@ document.addEventListener("DOMContentLoaded", function() {
             if (correctRate > 0.8) {
                 console.log('Correct rate more than 80%, reducing the size of rectangle by 90%');
 
-                buttonSize *= 0.9;  // Reduce the size by 90% of the previous size
-                updateButtonSize(buttonSize);
-
                 // Randomize the button's position within the game container
                 const containerWidth = gameContainer.clientWidth;
                 const containerHeight = gameContainer.clientHeight;
@@ -118,6 +137,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 button.style.left = `${randomX}px`;
                 button.style.top = `${randomY}px`;
 
+                // Update the button size after repositioning
+                buttonSize *= 0.1;  // Reduce the size by 90% of the previous size
+                updateButtonSize(buttonSize);
 
             } 
             // Reset the trialResults array for the next 10 trials
@@ -126,8 +148,24 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function updateButtonSize(sizePercentage) {
-        button.style.width = `${sizePercentage}%`;
-        button.style.height = `${sizePercentage}%`;
+        const containerWidth = gameContainer.clientWidth;
+        const containerHeight = gameContainer.clientHeight;
+        const newWidth = (containerWidth * sizePercentage) / 100;
+        const newHeight = (containerHeight * sizePercentage) / 100;
+
+        // Ensure the button does not shrink below the minimum size
+        const finalWidth = newWidth < minButtonSizePx ? minButtonSizePx : newWidth;
+        const finalHeight = newHeight < minButtonSizePx ? minButtonSizePx : newHeight;
+
+        button.style.width = `${finalWidth}px`;
+        button.style.height = `${finalHeight}px`;
+
+        // Update the overlay size and position
+        const overlaySize = Math.max(minClickAreaPx, Math.max(finalWidth, finalHeight));
+        overlay.style.width = `${overlaySize}px`;
+        overlay.style.height = `${overlaySize}px`;
+        overlay.style.left = `${parseFloat(button.style.left) + (finalWidth - overlaySize) / 2}px`;
+        overlay.style.top = `${parseFloat(button.style.top) + (finalHeight - overlaySize) / 2}px`;
     }
 
 
@@ -173,5 +211,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     gameContainer.appendChild(button);
+    gameContainer.appendChild(overlay);
     
 });
