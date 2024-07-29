@@ -132,8 +132,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 const containerHeight = gameContainer.clientHeight;
                 const buttonWidth = button.offsetWidth;
                 const buttonHeight = button.offsetHeight;
-                const randomX = Math.random() * (containerWidth - buttonWidth);
-                const randomY = Math.random() * (containerHeight - buttonHeight);
+
+
+
+                // Ensure the button stays within container boundaries
+                const maxX = containerWidth - buttonWidth;
+                const maxY = containerHeight - buttonHeight;
+                const randomX = Math.random() * maxX;
+                const randomY = Math.random() * maxY;
                 button.style.left = `${randomX}px`;
                 button.style.top = `${randomY}px`;
 
