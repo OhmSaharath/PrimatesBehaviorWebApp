@@ -47,8 +47,8 @@ document.addEventListener("DOMContentLoaded", function() {
             resetInactivityTimer();  // Start the inactivity timer after config is fetched
         })
         .catch(error => console.error('Error fetching config:', error));
-
     
+
     // Get the audio elements
     const correctSound = document.getElementById('correct-sound');
     const incorrectSound = document.getElementById('incorrect-sound');
@@ -111,10 +111,16 @@ document.addEventListener("DOMContentLoaded", function() {
             Trials++;  // Increment Trials only if color is not yellow
             if (color === 'green') {
                 trialResults.push(true);
+
+                correctSound.currentTime = 0;  // Reset sound to start
                 correctSound.play();  // Play correct sound
+
             } else if (color === 'red') {
                 trialResults.push(false);
+                
+                incorrectSound.currentTime = 0;  // Reset sound to start
                 incorrectSound.play();  // Play incorrect sound
+
             }
             if (trialResults.length > 10) {
                 trialResults.shift();  // Keep only the last 10 results
