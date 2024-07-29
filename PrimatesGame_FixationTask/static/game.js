@@ -48,7 +48,10 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .catch(error => console.error('Error fetching config:', error));
 
-
+    
+    // Get the audio elements
+    const correctSound = document.getElementById('correct-sound');
+    const incorrectSound = document.getElementById('incorrect-sound');
     
     // buttonclick
     button.onclick = function(event) {
@@ -108,8 +111,10 @@ document.addEventListener("DOMContentLoaded", function() {
             Trials++;  // Increment Trials only if color is not yellow
             if (color === 'green') {
                 trialResults.push(true);
+                correctSound.play();  // Play correct sound
             } else if (color === 'red') {
                 trialResults.push(false);
+                incorrectSound.play();  // Play incorrect sound
             }
             if (trialResults.length > 10) {
                 trialResults.shift();  // Keep only the last 10 results
@@ -133,18 +138,18 @@ document.addEventListener("DOMContentLoaded", function() {
                 const buttonWidth = button.offsetWidth;
                 const buttonHeight = button.offsetHeight;
 
-
-
                 // Ensure the button stays within container boundaries
                 const maxX = containerWidth - buttonWidth;
+                console.log(maxX)
                 const maxY = containerHeight - buttonHeight;
-                const randomX = Math.random() * maxX;
-                const randomY = Math.random() * maxY;
+                const randomX = Math.max(0, Math.random() * maxX);
+                console.log(randomX)
+                const randomY = Math.max(0, Math.random() * maxY);
                 button.style.left = `${randomX}px`;
                 button.style.top = `${randomY}px`;
 
                 // Update the button size after repositioning
-                buttonSize *= 0.1;  // Reduce the size by 90% of the previous size
+                buttonSize *= 0.5;  // Reduce the size by 90% of the previous size
                 updateButtonSize(buttonSize);
 
             } 
@@ -167,11 +172,18 @@ document.addEventListener("DOMContentLoaded", function() {
         button.style.height = `${finalHeight}px`;
 
         // Update the overlay size and position
-        const overlaySize = Math.max(minClickAreaPx, Math.max(finalWidth, finalHeight));
-        overlay.style.width = `${overlaySize}px`;
-        overlay.style.height = `${overlaySize}px`;
-        overlay.style.left = `${parseFloat(button.style.left) + (finalWidth - overlaySize) / 2}px`;
-        overlay.style.top = `${parseFloat(button.style.top) + (finalHeight - overlaySize) / 2}px`;
+        if (finalWidth < minClickAreaPx || finalHeight < minClickAreaPx) {
+            const overlaySize = Math.max(minClickAreaPx, Math.max(finalWidth, finalHeight));
+            overlay.style.width = `${overlaySize}px`;
+            overlay.style.height = `${overlaySize}px`;
+            overlay.style.left = `${parseFloat(button.style.left) + (finalWidth - overlaySize) / 2}px`;
+            overlay.style.top = `${parseFloat(button.style.top) + (finalHeight - overlaySize) / 2}px`;
+            overlay.style.pointerEvents = 'auto';  // Enable pointer events
+        } else {
+            overlay.style.pointerEvents = 'none';  // Disable pointer events in case of button larger than 0.5 x 0.5 cm
+            overlay.style.width = '0px';
+            overlay.style.height = '0px';
+        }
     }
 
 
