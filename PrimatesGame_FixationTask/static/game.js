@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let inactivityTimer = null; // Variable to convert state of inactivity back to original
     let actionBlocked = false;   // Flag to track if actions are blocked
     let Trials = 0;  // Global variable to count trials
-    let trialResults = [];  // Array to store results of last 10 trials
+    let Last10trialResults = [];  // Array to store results of last 10 trials
 
 
     // Fetch game configuration
@@ -110,32 +110,33 @@ document.addEventListener("DOMContentLoaded", function() {
         if (color !== 'yellow') {
             Trials++;  // Increment Trials only if color is not yellow
             if (color === 'green') {
-                trialResults.push(true);
+                Last10trialResults.push(true);
 
                 correctSound.currentTime = 0;  // Reset sound to start
                 correctSound.play();  // Play correct sound
 
             } else if (color === 'red') {
-                trialResults.push(false);
+                Last10trialResults.push(false);
                 
                 incorrectSound.currentTime = 0;  // Reset sound to start
                 incorrectSound.play();  // Play incorrect sound
 
             }
-            if (trialResults.length > 10) {
-                trialResults.shift();  // Keep only the last 10 results
+            if (Last10trialResults.length > 10) {
+                Last10trialResults.shift();  // Keep only the last 10 results
             }
-            console.log('Trials:', Trials, 'Recent 10 Trials:', trialResults);
+            console.log('Trials:', Trials, 'Recent 10 Trials:', Last10trialResults);
             updateButtonBasedOnPerformance();
         }
         actionBlocked = true;  // Block actions when color is green or red
     }
 
     function updateButtonBasedOnPerformance() {
-        if (trialResults.length === 10) {
-            const correctResponses = trialResults.filter(result => result).length;
-            const correctRate = correctResponses / trialResults.length;
-            if (correctRate > 0.8) {
+        if (Last10trialResults.length === 10) {
+            const correctResponses = Last10trialResults.filter(result => result).length;
+            const correctRate = correctResponses / Last10trialResults.length;
+            console.log("correct rate "+ correctRate)
+            if (correctRate >= 0.8) {
                 console.log('Correct rate more than 80%, reducing the size of rectangle by 90%');
 
                 // Randomize the button's position within the game container
@@ -158,9 +159,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 buttonSize *= 0.5;  // Reduce the size by 90% of the previous size
                 updateButtonSize(buttonSize);
 
+                // Reset the Last10trialResults array for the next 10 trials
+                Last10trialResults = [];
+
             } 
-            // Reset the trialResults array for the next 10 trials
-            trialResults = [];
+            
         }
     }
 
