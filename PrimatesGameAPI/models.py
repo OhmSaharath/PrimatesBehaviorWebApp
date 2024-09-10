@@ -69,4 +69,5 @@ class FixationGameResult(models.Model):
     timestamp = models.DateTimeField()
     feedback = models.BooleanField()
     feedbacktype = models.CharField(max_length=10)
+    buttonsize = models.FloatField()
     
