@@ -131,39 +131,48 @@ document.addEventListener("DOMContentLoaded", function() {
         actionBlocked = true;  // Block actions when color is green or red
     }
 
+    function randomizeButtonPositionandUpdateSize(buttonScale) {
+        // Randomize the button's position within the game container
+        const containerWidth = gameContainer.clientWidth;
+        const containerHeight = gameContainer.clientHeight;
+        const buttonWidth = button.offsetWidth;
+        const buttonHeight = button.offsetHeight;
+
+        // Ensure the button stays within container boundaries
+        const maxX = containerWidth - buttonWidth;
+        console.log(maxX)
+        const maxY = containerHeight - buttonHeight;
+        const randomX = Math.max(0, Math.random() * maxX);
+        console.log(randomX)
+        const randomY = Math.max(0, Math.random() * maxY);
+        button.style.left = `${randomX}px`;
+        button.style.top = `${randomY}px`;
+
+        // Update the button size after repositioning
+        buttonSize *= buttonScale;  // Reduce the size by 90% of the previous size
+        updateButtonSize(buttonSize);
+    }
+
     function updateButtonBasedOnPerformance() {
         if (Last10trialResults.length === 10) {
+            const bsize = 0.5; 
             const correctResponses = Last10trialResults.filter(result => result).length;
             const correctRate = correctResponses / Last10trialResults.length;
             console.log("correct rate "+ correctRate)
             if (correctRate >= 0.8) {
                 console.log('Correct rate more than 80%, reducing the size of rectangle by 90%');
 
-                // Randomize the button's position within the game container
-                const containerWidth = gameContainer.clientWidth;
-                const containerHeight = gameContainer.clientHeight;
-                const buttonWidth = button.offsetWidth;
-                const buttonHeight = button.offsetHeight;
-
-                // Ensure the button stays within container boundaries
-                const maxX = containerWidth - buttonWidth;
-                console.log(maxX)
-                const maxY = containerHeight - buttonHeight;
-                const randomX = Math.max(0, Math.random() * maxX);
-                console.log(randomX)
-                const randomY = Math.max(0, Math.random() * maxY);
-                button.style.left = `${randomX}px`;
-                button.style.top = `${randomY}px`;
-
-                // Update the button size after repositioning
-                buttonSize *= 0.5;  // Reduce the size by 90% of the previous size
-                updateButtonSize(buttonSize);
-
+                
+                randomizeButtonPositionandUpdateSize(bsize);
                 // Reset the Last10trialResults array for the next 10 trials
                 Last10trialResults = [];
 
             } 
             
+        }
+        else {
+            const bscale = 1;
+            randomizeButtonPositionandUpdateSize(bscale);
         }
     }
 
