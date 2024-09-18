@@ -59,6 +59,8 @@ class FixationGameConfig(models.Model):
 class Reports(models.Model):
     reportname =  models.CharField(max_length=50)
     game = models.ForeignKey(Games, on_delete=models.PROTECT)
+    def __str__(self)-> str:
+	    return self.reportname
 
 class FixationGameReport(models.Model):
     report = models.ForeignKey(Reports, on_delete=models.PROTECT)

@@ -107,6 +107,10 @@ class SingleFixationGameConfigView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FixationGameConfigSerializer
     permission_classes = (IsAuthenticated|IsAdmin|IsResearcher,)
     
+class FixationGameReportView(generics.ListCreateAPIView):
+    queryset = FixationGameReport.objects.all()
+    serializer_class = FixationGameReportSerializer
+    permission_classes = (IsAuthenticated|IsAdmin|IsResearcher,)
 
 
 ##### Group management views

@@ -72,6 +72,9 @@ def start_game(request):
         form = StartGameForm(request.POST)
         if form.is_valid():
 
+            
+            ##### Create new gameinstance #########
+            
             # Get current user in session
             user = User.objects.get(username=request.user)
             
@@ -83,6 +86,7 @@ def start_game(request):
             rpiboard = form.cleaned_data['rpi_name']
             primate = form.cleaned_data['primate_name']
             game = form.cleaned_data['game_name']
+            report = form.cleaned_data['report_name']
             config = get_config_id(game)
 
             if config == None:
@@ -111,9 +115,10 @@ def start_game(request):
             # Send the POST request with the data and headers
             response = requests.post(url, json=data, headers=headers)
             
+            ###### game instance created successfully #######
             if response.status_code == 201:
                 
-                # Initialize game configuration
+                ####### Initialize game configuration  ########
                 #print(response.json())
                 # Access the ID of the newly created instance from the response
                 game_instance_id = response.json().get('id')
@@ -133,7 +138,38 @@ def start_game(request):
                 
                 response = requests.post(url, json=data, headers=headers)
                 if response.status_code == 201:
-                    pass
+                    ######### Initilize Report instance #########
+                    
+                    report_instance_data  ={
+                        'report': report,
+                        'instance': game_instance_id,
+                        }
+                    
+                    # POST to /api/games-instances
+                    url = request.build_absolute_uri(reverse('api:fixationgamreport'))
+                    print(url)
+                    
+                    response = requests.post(url, json=report_instance_data, headers=headers)
+                    
+                    if response.status_code == 201:
+                        ################## Invoking the RPI board by updating model ###############
+                        # send a signal to start a game on target RPI board
+                        
+                        # get the state of the target RPI board
+                        # Replace `pk_value` with the actual primary key value you want to retrieve
+                        rpi_state = RPiStates.objects.get(rpiboard=rpiboard)
+                        # Flag signal to start the game
+                        rpi_state.is_occupied = False
+                        rpi_state.start_game = True  
+                        rpi_state.game_instance_running = game_instance_id  
+                        rpi_state.save()
+                        # Redict to dashboard page
+                        return redirect('/') # placeholder
+                    elif response.status_code == 401:
+                        return JsonResponse({'errors': 'Unauthorized'})
+                    else:
+                        print(response)
+                        return JsonResponse({'errors': 'something wrong'})
                 elif response.status_code == 401:
                     return JsonResponse({'errors': 'Unauthorized'})
                 else:
@@ -143,24 +179,17 @@ def start_game(request):
                 
                 # Gameinstance created successful
                 # GameConFiguration for that instance created successful
-                # send a signal to start a game on target RPI board
+
                 
-                # get the state of the target RPI board
-                # Replace `pk_value` with the actual primary key value you want to retrieve
-                rpi_state = RPiStates.objects.get(rpiboard=rpiboard)
-                # Flag signal to start the game
-                rpi_state.is_occupied = False
-                rpi_state.start_game = True  
-                rpi_state.game_instance_running = game_instance_id  
-                rpi_state.save()
-                # Redict to dashboard page
-                return redirect('/') # placeholder
             # authenthication failed
             elif response.status_code == 401:
                 return JsonResponse({'errors': 'Unauthorized'})
             else:
                 print(response)
                 return JsonResponse({'errors': 'something wrong'})
+        else:
+            return JsonResponse({'errors': 'something wrong'})
+            
     
     
     else:

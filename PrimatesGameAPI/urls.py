@@ -17,6 +17,7 @@ urlpatterns = [
     path('games-instances/<int:pk>', views.SingleGameInstanceView.as_view()),
     path('fixationconfigs', views.FixationGameConfigView.as_view() ,name = 'fixationconfigs'),
     path('fixationconfigs/<int:pk>', views.SingleFixationGameConfigView.as_view()),
+    path('fixationgamereport', views.FixationGameReportView.as_view() ,name = 'fixationgamreport'),
     path('groups/researcher/users', views.ResercherGroupManangeView.as_view()),
     path('groups/researcher/users/<int:pk>', views.ResercherDeleteView.as_view()),
     
