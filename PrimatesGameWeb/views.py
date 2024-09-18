@@ -46,6 +46,17 @@ def primates(request):
 
 
 def start_game(request):
+    '''
+    Start the game manually
+    Step of this view
+    1. Start at start-game.html page, researchers initilizae the game by selecting
+        - Raspberry Pi board that's available at the moment
+        - Primate 
+        - Game Type
+        - Config of the game (config will be relative after selecting game, show only config for that game)
+    
+    
+    '''
 
     def get_config_id(game_id):
         try:

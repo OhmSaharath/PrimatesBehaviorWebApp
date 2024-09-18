@@ -5,15 +5,20 @@ from django.http import HttpRequest , HttpResponse
 from django.http import JsonResponse
 # Create your views here
 def game_view(request, gameinstance):
-    try:
-    # Using get() to retrieve a single object
+    try: 
         gameinstance_id = GameInstances.objects.get(id=gameinstance)
-        print(gameinstance_id)
-    except :
+    except:
         raise Http404("Gameinstance does not exist")
-    
-    
+   
+    try: 
+        config = FixationGameConfig.objects.get(instance=gameinstance_id)    
+    except:
+        raise Http404("Configuration has not been setup yet.")
+    print(gameinstance_id)
     return render(request, "fixation.html")
+
+    
+    
 
 
 def fixationtask_signal_response(request, gameinstance):
