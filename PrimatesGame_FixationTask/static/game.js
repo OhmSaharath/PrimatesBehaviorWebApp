@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const gameContainer = document.getElementById('game-container');
     const signalUrlTemplate = gameContainer.getAttribute('data-signal-url');
     const configUrlTemplate = gameContainer.getAttribute('data-config-url');
+    const reportUrlTemplate = gameContainer.getAttribute('report-update-url');
     const gameInstanceId = getGameInstanceIdFromURL();
     
     const button = document.createElement('button');
@@ -53,15 +54,17 @@ document.addEventListener("DOMContentLoaded", function() {
     const correctSound = document.getElementById('correct-sound');
     const incorrectSound = document.getElementById('incorrect-sound');
     
-    // buttonclick
+    // buttonclick -> Green
     button.onclick = function(event) {
         if (actionBlocked) return;  // Prevent action if blocked
         console.log('correct')
         event.stopPropagation();  // Prevent the background click event from firing
 
+        // update button
         updateButtonColorAndTrials('green'); 
 
-
+        // populate reports
+        updateReport(gameInstanceId, 'correct', Trials)
 
         // Activate the pump
         sendSignal(gameInstanceId); // Call the function to send signal
@@ -75,11 +78,18 @@ document.addEventListener("DOMContentLoaded", function() {
         }, config.interval_correct * 1000);  // Convert seconds to milliseconds
     };
 
-    // Special case, tolerance window
+    // Special case, tolerance window -> Green
     overlay.onclick = function(event) {
         if (actionBlocked) return;  // Prevent action if blocked
         event.stopPropagation();  // Prevent the background click event from firing
+
+        // update button
         updateButtonColorAndTrials('green');
+
+        // populate reports
+        updateReport(gameInstanceId, 'correct', Trials)
+
+        // Activate the pump
         sendSignal(gameInstanceId); // Call the function to send signal
 
         setTimeout(() => {
@@ -89,11 +99,17 @@ document.addEventListener("DOMContentLoaded", function() {
         }, config.interval_correct * 1000);  // Convert seconds to milliseconds
     };
 
-    // Incorrect case, background click
+    // Incorrect case, background click -> Red
     document.body.onclick = function() {
         if (actionBlocked) return;  // Prevent action if blocked
         console.log('incorrect')
+
+        // update button
         updateButtonColorAndTrials('red');
+
+        // populate reports
+        updateReport(gameInstanceId, 'incorrect', Trials)
+
         console.log('waitfor'+config.interval_incorrect+'second')
 
 
@@ -228,15 +244,76 @@ document.addEventListener("DOMContentLoaded", function() {
         xhr.send();
     }
 
-    // Absent case
+    function updateReport(gameInstanceId, status, trials_num){
+
+        // Replace the placeholder with the actual gameInstanceId
+        const reportUrl = reportUrlTemplate.replace('0', gameInstanceId);
+
+        // Current timestamp in ISO format
+        const timestamp = new Date().toISOString();  
+
+
+        // Get the current button's dimensions
+        const buttonWidth = button.offsetWidth;
+        const buttonHeight = button.offsetHeight;
+
+        // Calculate the area of the button, resulting in px
+        const area = buttonWidth * buttonHeight;
+
+        // Set the isCorrect variable based on the status
+        const isCorrect = (status === 'correct') ? true : false;
+
+
+        // Use AJAX to send signal to Django backend
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', reportUrl, true); 
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));  // CSRF token for security
+        // Send the data with timestamp, area, status, and isCorrect boolean
+        xhr.send(JSON.stringify({ 
+            timestamp: timestamp, 
+            area: area, 
+            status: status,
+            isCorrect: isCorrect,  // Store true if "correct", false otherwise
+            trialsNum : trials_num
+        }));
+
+        // For debugging: log the button area, timestamp, status, and isCorrect
+        console.log(`Button area: ${area} px², Timestamp: ${timestamp}, Status: ${status}, IsCorrect: ${isCorrect}, trialsNum: ${trials_num}`);
+
+    }
+
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Absent case, call after every case 
     function resetInactivityTimer() {
         if (inactivityTimer) {
             clearTimeout(inactivityTimer);
         }
         inactivityTimer = setTimeout(() => {
             console.log('no activity detected')
-
+            
+            // update button
             updateButtonColorAndTrials('red');
+
+            // populate reports
+            updateReport(gameInstanceId, 'absent', Trials)
+
+            
 
             setTimeout(() => {
                 button.style.backgroundColor = 'yellow';

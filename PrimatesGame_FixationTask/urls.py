@@ -7,4 +7,5 @@ urlpatterns = [
     path('fixation/<int:gameinstance>',views.game_view, name='fixation-page'),
     path("fixation/signalresponse/<int:gameinstance>",views.fixationtask_signal_response, name="signalresponse"),
     path('fixation/get_game_config/<int:gameinstance>/', views.get_game_config, name='get_game_config'),
+    path('fixation/update_report/<int:gameinstance>/', views.update_report, name='update_report'),
 ]

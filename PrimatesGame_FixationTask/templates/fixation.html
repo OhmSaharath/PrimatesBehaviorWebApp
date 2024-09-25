@@ -10,7 +10,7 @@
     <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
 </head>
 <body>
-    <div id="game-container" data-signal-url="{% url 'fixation_game:signalresponse' gameinstance=0 %}"  data-config-url="{% url 'fixation_game:get_game_config' gameinstance=0 %}" fullscreen>
+    <div id="game-container" data-signal-url="{% url 'fixation_game:signalresponse' gameinstance=0 %}"  data-config-url="{% url 'fixation_game:get_game_config' gameinstance=0 %}" report-update-url="{% url 'fixation_game:update_report' gameinstance=0 %}" fullscreen>
         <!-- Other HTML content -->
          
             <!-- Audio elements -->
