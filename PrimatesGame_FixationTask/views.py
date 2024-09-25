@@ -9,7 +9,10 @@ import json
 import pytz
 from datetime import datetime
 from django.utils.timezone import make_aware, get_current_timezone
-
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+from django.urls import reverse
+import requests
 
 # Create your views here
 def game_view(request, gameinstance):
@@ -95,8 +98,7 @@ def update_report(request, gameinstance):
             # Convert string timestamp to a datetime object in UTC
             timestamp_utc = datetime.strptime(timestamp_utc_str, '%Y-%m-%dT%H:%M:%S.%fZ')
 
-            # Make it timezone-aware in UTC
-            timestamp_utc = make_aware(timestamp_utc, pytz.UTC)
+            timestamp_utc = pytz.utc.localize(timestamp_utc)  # Make it timezone-aware in UTC
 
             # Convert the timestamp to Bangkok timezone
             bangkok_tz = pytz.timezone('Asia/Bangkok')
@@ -107,9 +109,48 @@ def update_report(request, gameinstance):
             # Log received data for debugging (optional)
             print(f"Button data recieved - Timestamp: {timestamp_bangkok}, Area: {area}, Status: {status}, IsCorrect: {is_correct}")
             
+            ##### Populate Report #########
             
-            # Send a JSON response back to the client
-            return JsonResponse({'message': 'Data received and saved successfully!'}, status=200)
+            # Get current user in session
+            user = User.objects.get(username=request.user)
+            
+            # Assuming you have already generated a token for the user
+            token = Token.objects.get(user=user)
+            
+            # get correct report Id
+            fixation_report = FixationGameReport.objects.get(instance=gameinstance)
+            fixation_report_id = fixation_report.id
+            
+            data = {
+               'fixationreport': fixation_report_id,
+                'timestamp': timestamp_bangkok.isoformat(),
+                'feedback': is_correct,
+                'feedbacktype' : status,
+                'buttonsize' : area
+            }
+            
+            print(data)
+            #print(data)
+            # Set up the request headers with the token
+            headers = {
+                'Authorization': f'Token {token}',
+                'Content-Type': 'application/json'  # Adjust content type if necessary
+            }
+            
+            # POST to /api/fixationgameresult
+            url = request.build_absolute_uri(reverse('api:fixationgameresult'))
+            
+            # Send the POST request with the data and headers
+            response = requests.post(url, json=data, headers=headers)
+            
+            if response.status_code == 201:
+                # Return True to indicate javascript to process futher
+                return JsonResponse({'message': 'Data received and POST successfully!'}, status=201)
+            # authenthication failed
+            elif response.status_code == 401:
+                return JsonResponse({'errors': 'Unauthorized'})
+            
+            
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         

@@ -1,7 +1,7 @@
 
 from django.shortcuts import render
 from rest_framework import generics
-from .models import RPiBoards, RPiStates, Primates, Games, GameInstances ,GameConfig, FixationGameConfig , Reports , FixationGameReport , FixationGameResult
+from .models import RPiBoards, RPiStates, Primates, Games, GameInstances ,GameConfig, FixationGameConfig , Reports , FixationGameReport ,  FixationGameResult
 from .permissions import IsResearcher , IsRPiClient , IsAdmin ,  IsResearcherOrAdmin 
 from rest_framework.permissions import IsAuthenticated , AllowAny 
 from rest_framework.response import Response
@@ -111,6 +111,11 @@ class FixationGameReportView(generics.ListCreateAPIView):
     queryset = FixationGameReport.objects.all()
     serializer_class = FixationGameReportSerializer
     permission_classes = (IsAuthenticated|IsAdmin|IsResearcher,)
+    
+class FixationGameResultView(generics.ListCreateAPIView):
+    queryset = FixationGameResult.objects.all()
+    serializer_class = FixationGameResultSerializer
+    permission_classes = (IsAuthenticated|IsAdmin|IsResearcher,) # PERMISSION CLASS TO BE EDIT -> ONLT RPI INSTANCE CAN POST NEW RESULT
 
 
 ##### Group management views

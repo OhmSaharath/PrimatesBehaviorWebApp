@@ -92,7 +92,7 @@ def start_game(request):
             if config == None:
                 raise Http404("Configuration does not exist")
             else:
-                pass
+                pass #### WHAT IS IT -> TO BE CHECkED
 
             
             data = {
