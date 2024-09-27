@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 import requests
-from PrimatesGameAPI.models import RPiBoards , Primates , Games , RPiStates , GameInstances , GameConfig
+from PrimatesGameAPI.models import RPiBoards , Primates , Games , RPiStates , GameInstances , GameConfig, Reports
 from django.contrib import messages
 from datetime import datetime
 from PrimatesGameAPI import views as APIviews
@@ -12,6 +12,8 @@ from django.http import HttpRequest , HttpResponse
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.http import Http404
+from django.utils import timezone, dateformat
+
 
 
 # Create your views here.
@@ -86,7 +88,7 @@ def start_game(request):
             rpiboard = form.cleaned_data['rpi_name']
             primate = form.cleaned_data['primate_name']
             game = form.cleaned_data['game_name']
-            report = form.cleaned_data['report_name']
+            report_id = form.cleaned_data['report_name']
             config = get_config_id(game)
 
             if config == None:
@@ -139,10 +141,24 @@ def start_game(request):
                 response = requests.post(url, json=data, headers=headers)
                 if response.status_code == 201:
                     ######### Initilize Report instance #########
+                    date_time = timezone.now()
+                    str_timezone = timezone.localtime(date_time).strftime("%Y-%m-%d_%H-%M")
+                    #formatted_date = dateformat.format(
+                    #                timezone.localtime(timezone.now()),
+                     #               'Y-m-d H:i:s',
+                    #                )
+                    primate =  GameInstances.objects.get(id=game_instance_id).primate
+                    
+                    primate_name = Primates.objects.get(id=primate.id).name
+                    report_name = Reports.objects.get(id=report_id).reportname
+                    
+                    # Create Gamereportname
+                    gamereportname = report_name + '_' +  primate_name + '_' + str_timezone
                     
                     report_instance_data  ={
-                        'report': report,
+                        'report': report_id,
                         'instance': game_instance_id,
+                        'gamereportname': gamereportname
                         }
                     
                     # POST to /api/games-instances

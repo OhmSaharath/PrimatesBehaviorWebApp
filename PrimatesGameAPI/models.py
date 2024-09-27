@@ -65,6 +65,7 @@ class Reports(models.Model):
 class FixationGameReport(models.Model):
     report = models.ForeignKey(Reports, on_delete=models.PROTECT)
     instance = models.OneToOneField(GameInstances, on_delete=models.PROTECT,related_name="fixationreportgameinstance")
+    gamereportname = models.CharField(max_length=50, blank=True , null=True)
     
 class FixationGameResult(models.Model):
     fixationreport = models.ForeignKey(FixationGameReport, on_delete=models.PROTECT)

@@ -23,7 +23,7 @@ def validate_choice(value):
     
 class StartGameForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        rpi_name_list = RPiBoards.objects.all()
+        rpi_name_list = RPiBoards.objects.filter(rpistates__is_occupied=False)  # Only include not occupied boards
         primate_name_list = Primates.objects.all()
         game_name_list = Games.objects.all()
         report_list = Reports.objects.all()
