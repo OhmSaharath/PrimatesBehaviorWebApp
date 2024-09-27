@@ -20,7 +20,7 @@ class UserNamePOSTSerializer(serializers.Serializer):
 class PrimatesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Primates
-        fields = ['id','name']
+        fields = '__all__'
         
 class RPiBoardsSerializer(serializers.ModelSerializer):
     ssid = serializers.CharField(required=False, allow_blank=True)

@@ -23,6 +23,7 @@ class RPiStates(models.Model):
  
 class Primates(models.Model):
     name = models.CharField(max_length=255)
+    is_occupied =  models.BooleanField(default=False)
     def __str__(self)-> str:
 	    return self.name
     

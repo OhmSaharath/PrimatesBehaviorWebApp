@@ -116,6 +116,11 @@ def start_game(request):
             # Make a POST request to your API endpoint
             # Send the POST request with the data and headers
             response = requests.post(url, json=data, headers=headers)
+            print(primate)
+            #Update Primate Status -> Use Django
+            primate_obj = Primates.objects.get(id=primate)
+            primate_obj.is_occupied = True
+            primate_obj.save()
             
             ###### game instance created successfully #######
             if response.status_code == 201:
