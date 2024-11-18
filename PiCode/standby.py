@@ -14,23 +14,79 @@ import yaml
 
 import RPi.GPIO as GPIO 
 
+###### Motor Control #####
+# Define GPIO pins
+DIR = 18      # Direction pin
+STEP = 16      # Step pin
+ENABLE = 12   # Enable pin
 
+# Define directions
+CW = 1        # Clockwise
+CCW = 0       # Counterclockwise
 
+# Step and speed settings
+steps = 200   # 200 steps for 360 degrees
+speed = 0.0005 # Speed
 
+# Setup GPIO mode
+GPIO.setmode(GPIO.BOARD)
 
-# Disable warnings
-GPIO.setwarnings(False)
-# init LEDs
-LED1 = 17 # LED1 at GPIO 17
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(LED1, GPIO.OUT)
+# Setup GPIO pins
+GPIO.setup(DIR, GPIO.OUT)
+GPIO.setup(STEP, GPIO.OUT)
+GPIO.setup(ENABLE, GPIO.OUT)
+
+# Function to disable motor power
+def disable_motor():
+    GPIO.output(ENABLE, GPIO.HIGH)  # Disable (or LOW, depending on driver)
+
+# Function to enable motor power
+def enable_motor():
+    GPIO.output(ENABLE, GPIO.LOW)   # Enable (or HIGH, depending on driver)
+
+def motor_test():
+    enable_motor()
+
+    #### Motor control logic
+    
+    # Set the direction to clockwise and run for 200 steps
+    GPIO.output(DIR, CW)
+    for x in range(steps):
+        GPIO.output(STEP, GPIO.HIGH)
+        time.sleep(speed)
+        GPIO.output(STEP, GPIO.LOW)
+        time.sleep(speed)
+
+    # Brief pause and switch direction
+    time.sleep(1.0)
+    GPIO.output(DIR, CCW)
+    for x in range(steps):
+        GPIO.output(STEP, GPIO.HIGH)
+        time.sleep(speed)
+        GPIO.output(STEP, GPIO.LOW)
+        time.sleep(speed)
+
+    time.sleep(1.0)  # Adjust idle time as needed
+    
+    disable_motor()
+    
+    
+    #GPIO.cleanup()
 
 
 # Set up Chrome options
 options = webdriver.ChromeOptions()
-#options.add_argument("--start-fullscreen")  # Launches Chrome in full-screen mode
-#options.add_argument("--disable-infobars") # removes a warning
-options.add_argument("--kiosk")#open in full screen
+options.add_argument("--start-maximized")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-web-security")
+options.add_argument("--ignore-certificate-errors")
+options.add_argument("--guest")
+options.add_argument("--kiosk")
+options.add_argument("--disable-password-manager-reauthentication")
+options.add_experimental_option("useAutomationExtension", False)
+options.add_experimental_option("excludeSwitches",["enable-automation"])
+
+
 
 # Selenium Setup
 s = Service('/usr/bin/chromedriver')
@@ -46,9 +102,10 @@ password = conf['account']['password']
 
 #### Credential Setup ####
 ROOT_URI = "http://192.168.0.100:8000"
+STANDBY_URI = ROOT_URI + "/standby/"
 
 API_ENDPOINT = ROOT_URI + "/api/rpi-states/1"
-GAME_URL = ROOT_URI +  '/accounts/login/'
+LOGIN_URL = ROOT_URI +  '/accounts/login/'
 
 # Token value (RPiClient User token)
 TOKEN = "dc03df6f126fc3c11717c7d93447fef8b056db52"
@@ -129,22 +186,50 @@ def update_pi_status(pi_status, endpoint, headers):
         print("Error:", e)
         
         
+gpio_lock = multiprocessing.Lock()
 
-def manipulate_GPIO():
-    # Flash the LED
+def motor_control():
+    
+    print('Testing')
+    motor_test()
+    
     while True:
+        #print('Test Motor')
         pi_status = get_pi_status(API_ENDPOINT,HEADERS)
-        if pi_status['gp17'] == True:
-            GPIO.output(LED1,1)
-        elif pi_status['gp17'] == False:
-            GPIO.output(LED1,0)
-        time.sleep(0.250) # Wait 1 second
+        if pi_status['motor'] == True:
+            enable_motor()
+            #### Motor control logic
+            
+            # Set the direction to clockwise and run for 200 steps
+            GPIO.output(DIR, CW)
+            for x in range(steps):
+                GPIO.output(STEP, GPIO.HIGH)
+                time.sleep(speed)
+                GPIO.output(STEP, GPIO.LOW)
+                time.sleep(speed)
+
+            # Brief pause and switch direction
+            time.sleep(1.0)
+            GPIO.output(DIR, CCW)
+            for x in range(steps):
+                GPIO.output(STEP, GPIO.HIGH)
+                time.sleep(speed)
+                GPIO.output(STEP, GPIO.LOW)
+                time.sleep(speed)
+
+            time.sleep(1.0)  # Adjust idle time as needed
+            
+            disable_motor()
+            
+        elif pi_status['motor'] == False:
+            disable_motor()  # Ensure motor is disabled
+        time.sleep(0.250) # Wait 0.25 second
 
 def monitor_close_game():
     while True:
         pi_status = get_pi_status(API_ENDPOINT,HEADERS)
         if pi_status['stop_game'] == True:
-            HOME_PAGE = ROOT_URI
+            HOME_PAGE = STANDBY_URI
             browser.get(HOME_PAGE)
             
             pi_status['stop_game'] = False
@@ -157,6 +242,10 @@ def monitor_close_game():
         
 
 def main_standby():
+    
+    #Start by standby page
+    browser.get(STANDBY_URI)
+    
     while True:
         pi_status = get_pi_status(API_ENDPOINT,HEADERS)
         #print(pi_status)
@@ -182,14 +271,24 @@ def main_standby():
             print('Something wrong with the server, or authentecation failed')
 
 def main():
-    main_start = multiprocessing.Process(name="main_standby", target = main_standby, args = ())
-    control_GPIO = multiprocessing.Process(name="manipulate_GPIO", target = manipulate_GPIO, args = ())
-    close_game = multiprocessing.Process(name="monitor_close_game", target = monitor_close_game, args = ())
-    main_start.start()
-    control_GPIO.start()
-    close_game.start()
+    try:
+        main_start = multiprocessing.Process(name="main_standby", target = main_standby, args = ())
+        ctx = multiprocessing.get_context("fork")  # Use "fork" for compatibility
+        #pump_motor = multiprocessing.Process(target=motor_control, args=())
+        pump_motor = ctx.Process(target=motor_control)
+        close_game = multiprocessing.Process(name="monitor_close_game", target = monitor_close_game, args = ())
+        main_start.start()
+        pump_motor.start()
+        pump_motor.join()
+        close_game.start()
+    except KeyboardInterrupt:
+        print('Stopping motor...')
+    finally:
+        disable_motor()  # Ensure motor is disabled
+        GPIO.cleanup()
+
 
 
 if __name__ == "__main__":
-    login(GAME_URL, "username", username, "password", password, "submit")
+    login(LOGIN_URL, "username", username, "password", password, "submit")
     main()

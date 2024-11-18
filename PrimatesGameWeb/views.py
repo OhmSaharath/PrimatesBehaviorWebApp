@@ -241,3 +241,6 @@ def profile(request, username):
 
     return redirect("")
 
+
+def standby(request):
+    return render(request, "standby.html")
