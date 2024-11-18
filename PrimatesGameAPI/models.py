@@ -17,7 +17,7 @@ class RPiStates(models.Model):
     game_instance_running = models.IntegerField(default=None,  blank=True , null=True) 
     start_game =  models.BooleanField(default=False)
     stop_game =  models.BooleanField(default=False)
-    gp17 = models.BooleanField(default=False)
+    motor = models.BooleanField(default=False)
     def __str__(self)-> str:
 	    return self.rpiboard.board_name
  

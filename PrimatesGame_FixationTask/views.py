@@ -48,7 +48,7 @@ def fixationtask_signal_response(request, gameinstance):
             raise Http404("No RPiStates matches the given query.")
         
         #print('here')
-        rpi_state.gp17 = True
+        rpi_state.motor = True
         rpi_state.save()
         # For simplicity, let's just print a message
         #print("button press")
