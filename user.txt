@@ -1,11 +1,11 @@
 Superuser
     username : admin
     password : @dmin1234
-    token : 7e16aaf3ed0a3ecb2c29b67c17195a727669b599
+    token : 46321adc9e465e752df826796b38298bc95a33c5
 
 
 
 RPiClient
     username : rpiclient
     password : board@primates1234
-    token : dc03df6f126fc3c11717c7d93447fef8b056db52
+    token : 0828684a73506b61ae2dfa8f0ba0c0f7e02b4208
