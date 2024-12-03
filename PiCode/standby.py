@@ -104,11 +104,13 @@ password = conf['account']['password']
 ROOT_URI = "http://192.168.0.100:8000"
 STANDBY_URI = ROOT_URI + "/standby/"
 
-API_ENDPOINT = ROOT_URI + "/api/rpi-states/1"
+API_ENDPOINT_STATE = ROOT_URI + "/api/rpi-states/1"
+API_ENDPOINT_GAMEINSTANCE = ROOT_URI + '/api/games-instances/'
+API_ENDPOINT_GAME = ROOT_URI + '/api/games/'
 LOGIN_URL = ROOT_URI +  '/accounts/login/'
 
 # Token value (RPiClient User token)
-TOKEN = "dc03df6f126fc3c11717c7d93447fef8b056db52"
+TOKEN = "0828684a73506b61ae2dfa8f0ba0c0f7e02b4208"
 
 # Headers containing the token
 HEADERS = {
@@ -185,7 +187,33 @@ def update_pi_status(pi_status, endpoint, headers):
     except Exception as e:
         print("Error:", e)
         
-        
+def get_arbitary_info(endpoint,headers,**kwargs):
+    '''
+    GET request from endpoint and return information
+    # Return JSON payload data or False if some problem occur
+    '''
+    
+    # Use int_key = <integer> as keyword argument to add extra query infomation 
+    
+    # No specific integer query
+    if not kwargs:
+        fullendpoint = endpoint
+    else:
+        fullendpoint = endpoint + str(kwargs["int_key"])
+    try:
+        response = requests.get(fullendpoint , headers=headers)
+        if response.status_code == 200:
+            # Process the signal received from the API
+            data = response.json()
+
+            return data 
+        else :
+            return False
+    except Exception as e:
+        print("Error:", e)
+
+ 
+
 gpio_lock = multiprocessing.Lock()
 
 def motor_control():
@@ -195,7 +223,7 @@ def motor_control():
     
     while True:
         #print('Test Motor')
-        pi_status = get_pi_status(API_ENDPOINT,HEADERS)
+        pi_status = get_pi_status(API_ENDPOINT_STATE,HEADERS)
         if pi_status['motor'] == True:
             enable_motor()
             #### Motor control logic
@@ -227,7 +255,7 @@ def motor_control():
 
 def monitor_close_game():
     while True:
-        pi_status = get_pi_status(API_ENDPOINT,HEADERS)
+        pi_status = get_pi_status(API_ENDPOINT_STATE,HEADERS)
         if pi_status['stop_game'] == True:
             HOME_PAGE = STANDBY_URI
             browser.get(HOME_PAGE)
@@ -237,7 +265,7 @@ def monitor_close_game():
             pi_status['is_occupied'] = False
             pi_status['game_instance_running'] = None
             
-            update_pi_status(pi_status, API_ENDPOINT, HEADERS)
+            update_pi_status(pi_status, API_ENDPOINT_STATE, HEADERS)
         time.sleep(3)
         
 
@@ -247,34 +275,42 @@ def main_standby():
     browser.get(STANDBY_URI)
     
     while True:
-        pi_status = get_pi_status(API_ENDPOINT,HEADERS)
+        pi_status = get_pi_status(API_ENDPOINT_STATE,HEADERS)
         #print(pi_status)
         if pi_status:
             if pi_status['is_occupied'] == True:
                 print('Game is running')
                 time.sleep(30)
                 continue
-            elif (pi_status['is_occupied'] == False) and(pi_status['start_game'] == True):
+            # STATE : Start game signal : from user
+            elif(pi_status['is_occupied'] == False) and(pi_status['start_game'] == True):
                 
-                GAME_URI = ROOT_URI + f"/game-page/{str(pi_status['game_instance_running'])}"
+                # Find out which game it is : check from gameinstance API
+        
+                gameinstance_data = get_arbitary_info(API_ENDPOINT_GAMEINSTANCE,HEADERS,int_key = pi_status['game_instance_running'])
+                game_id = gameinstance_data["game"]
+                
+                if game_id == 1: # Fixation_Task
+                    GAME_URI = ROOT_URI + f"/game/fixation/{str(pi_status['game_instance_running'])}"
                 
                 #open_chromium_kiosk(GAME_URL)
                 browser.get(GAME_URI)
                 # update status and switch to game running mode
                 pi_status['start_game'] = False
                 pi_status['is_occupied'] = True
-                update_pi_status(pi_status, API_ENDPOINT,HEADERS)
+                update_pi_status(pi_status, API_ENDPOINT_STATE,HEADERS)
             else:
                 print('Standby....')
                 time.sleep(5)
         else :
+            # Further work: False to request from API 
             print('Something wrong with the server, or authentecation failed')
 
 def main():
     try:
         main_start = multiprocessing.Process(name="main_standby", target = main_standby, args = ())
         ctx = multiprocessing.get_context("fork")  # Use "fork" for compatibility
-        #pump_motor = multiprocessing.Process(target=motor_control, args=())
+        pump_motor = multiprocessing.Process(target=motor_control, args=())
         pump_motor = ctx.Process(target=motor_control)
         close_game = multiprocessing.Process(name="monitor_close_game", target = monitor_close_game, args = ())
         main_start.start()
