@@ -1,0 +1,22 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.sidebar {
+    background-color: #f8f9fa;
+    padding: 15px;
+}
+
+.center_startgame {
+    margin: auto;
+    width: 25%;
+    padding: 10px;
+  }
+
+  .center_header {
+    text-align: center;
+  }
+
+  .authennav {
+    float: right; /* Or use other positioning techniques like flexbox or grid */
+  }

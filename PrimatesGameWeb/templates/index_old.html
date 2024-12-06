@@ -1,0 +1,47 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<section>
+  <article id="hero">
+    <h1 class="heading_shadow">Start Experiment Here!</h1>
+    <p>Current 0 PI board avialable</p>
+    <a href="#" class="cta"> Launch Game </a>
+  </article>
+</section>
+<section>
+  <article>
+    <h2>Experiment running</h2>
+    <p>
+      Current status of running experiment
+    </p>
+    {% for rpi_state in rpi_states %}
+    <div>
+      <div class="status-circle {% if rpi_state.is_occupied %}status-red{% else %}status-green{% endif %}"></div>
+      <span>{{ rpi_state.rpiboard }}</span>
+      <br>
+    </div>
+    {% endfor %}
+  </article>
+  <article>
+    <h2>Login</h2>
+    <p>
+        Loren Ipsum
+    </p>
+    <p>
+      <!-- Add code here for book  -->
+      Loren Ipsum
+    </p>
+  </article>
+  <article>
+    <h2>Documentation</h2>
+    <img src="{% static 'img/head_chef.jpg' %}" />
+    <p>
+      Start Here
+    </p>
+    <ul>
+      <li>Installation</li>
+      <li>Registration</li>
+      <li>Instantiate the game</li>
+      <li>Collect Record</li>
+    </ul>
+  </article>
+</section>
+{% endblock %}

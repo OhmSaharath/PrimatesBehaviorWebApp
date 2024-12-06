@@ -19,7 +19,33 @@ from django.utils import timezone, dateformat
 # Create your views here.
 def home(request):
     rpi_states = RPiStates.objects.all()  # Retrieve all instances of YourModel
-    return render(request, "index.html",  {'rpi_states': rpi_states , 'user': request.user})
+    
+    # Get all experiments with status 'Running'
+    running_experiments = RPiStates.objects.filter(is_occupied=True)
+    
+    # Check if all statuses are 'Running' (compare count with total experiments)
+    all_running = running_experiments.count() == RPiStates.objects.count()
+    
+    # Get all primates with status 'occupied'
+    unavailable_primates = Primates.objects.filter(is_occupied=True)
+    
+    # Check if all statuses are 'occupied' (compare count with total experiments)
+    all_primates_unavailable = unavailable_primates.count() == Primates.objects.count()
+    
+    data = {
+        "cards": [
+            {"title": "Card 1", "text": "Content 1", "color": "primary"},
+            {"title": "Card 2", "text": "Content 2", "color": "success"},
+            {"title": "Card 3", "text": "Content 3", "color": "danger"},
+        ],
+        "experiments": [{"id":i, "name": rpi_state.rpiboard ,"status": "Running" if rpi_state.is_occupied else "Standby"} for i,rpi_state in enumerate(rpi_states)],
+        "all_running": all_running,
+        "all_primates_unavailable" : all_primates_unavailable,
+    }
+    
+    
+    #return render(request, "index.html",  {'rpi_states': rpi_states , 'user': request.user})
+    return render(request, "index.html",  data)
 
 
 def primates(request):

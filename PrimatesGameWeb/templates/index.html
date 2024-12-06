@@ -1,47 +1,121 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
-<section>
-  <article id="hero">
-    <h1 class="heading_shadow">Start Experiment Here!</h1>
-    <p>Current 0 PI board avialable</p>
-    <a href="#" class="cta"> Launch Game </a>
-  </article>
-</section>
-<section>
-  <article>
-    <h2>Experiment running</h2>
-    <p>
-      Current status of running experiment
-    </p>
-    {% for rpi_state in rpi_states %}
-    <div>
-      <div class="status-circle {% if rpi_state.is_occupied %}status-red{% else %}status-green{% endif %}"></div>
-      <span>{{ rpi_state.rpiboard }}</span>
-      <br>
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Home{% endblock %}
+
+{% block content %}
+<h3>Primates Research Dashboard</h3>
+
+<!-- Cards Section -->
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Card 1</h5>
+                <p class="card-text">Some quick example text.</p>
+            </div>
+        </div>
     </div>
-    {% endfor %}
-  </article>
-  <article>
-    <h2>Login</h2>
-    <p>
-        Loren Ipsum
-    </p>
-    <p>
-      <!-- Add code here for book  -->
-      Loren Ipsum
-    </p>
-  </article>
-  <article>
-    <h2>Documentation</h2>
-    <img src="{% static 'img/head_chef.jpg' %}" />
-    <p>
-      Start Here
-    </p>
-    <ul>
-      <li>Installation</li>
-      <li>Registration</li>
-      <li>Instantiate the game</li>
-      <li>Collect Record</li>
-    </ul>
-  </article>
-</section>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Card 2</h5>
+                <p class="card-text">Some quick example text.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Card 3</h5>
+                <p class="card-text">Some quick example text.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Placeholder for charts -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Chart 1</h5>
+                <div id="chart1">[Chart Placeholder]</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Chart 2</h5>
+                <div id="chart2">[Chart Placeholder]</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Table Section -->
+<div class="card mt-4">
+        {% if all_running and all_primates_unavailable %}
+            <div class="card-body d-flex align-items-center">
+                <h5 class="card-title mb-0 me-3">Experiment Table </h5>
+                <h5 class="card-title mb-0 me-3" style="color:red;">All Devices and Primates Unavialable!</h5>
+            </div>
+        {% elif all_primates_unavailable %}
+            <div class="card-body d-flex align-items-center">
+                <h5 class="card-title mb-0 me-3">Experiment Table </h5>
+                <h5 class="card-title mb-0 me-3" style="color:red;">All Primates Unavialable!</h5>
+            </div>
+        {% elif all_running %}
+            <div class="card-body d-flex align-items-center">
+                <h5 class="card-title mb-0 me-3">Experiment Table </h5>
+                <h5 class="card-title mb-0 me-3" style="color:red;">All Devices Occupied!</h5>
+            </div>
+        {% else %}
+            <div class="card-body d-flex align-items-center">
+                <h5 class="card-title mb-0 me-3">Experiment Table </h5>
+                <button class="btn btn-success btn-sm me-3" onclick="window.location.href='{% url 'webapp:start-game' %}'">Start Experiments</button>
+            </div>
+        {% endif %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for experiment in experiments %}
+                <tr>
+                    <td>{{ experiment.id }}</td>
+                    <td>{{ experiment.name }}</td>
+                    <td>
+                        {% if experiment.status == "Running" %}
+                        <span style="display: inline-flex; align-items: center;">
+                            <span class="rounded-circle d-inline-block" 
+                                  style="width: 12px; height: 12px; background-color: green; margin-right: 5px;">
+                            </span>
+                            Running
+                        </span>
+                        {% else %}
+                        <span style="display: inline-flex; align-items: center;">
+                            <span class="rounded-circle d-inline-block" 
+                                  style="width: 12px; height: 12px; background-color: orange; margin-right: 5px;">
+                            </span>
+                            Standby
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary">View</button>
+                        <button class="btn btn-sm btn-danger">Stop</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

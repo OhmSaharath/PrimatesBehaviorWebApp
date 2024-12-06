@@ -1,19 +1,28 @@
-{% extends 'base.html' %} {% load crispy_forms_tags %} {% load static %} {% block content %}
-<section>
-    <article>
-    
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Dashboard - Home{% endblock %}
 
-    <!--Begin row-->
-    <div class="center_startgame">
-        <!-- Add your code in the line below  -->
-        <h1>Initialize the experiment</h1>
-            <form method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button  type="submit"  class="btn btn-success">Submit </button>
-            </form>
+{% block content %}
+<div class="card mt-4">
+    <div class="card-body">
+        <div class="center_header">
+            <h3>Start the Experiment</h3>
+        </div>
+        <section>
+            <article>
+            <!--Begin row-->
+            <div class="center_startgame">
+                <!-- Add your code in the line below  -->
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button  type="submit"  class="btn btn-success">Submit </button>
+                    </form>
+            </div>
+            <!--End row-->
+            </article>
+        </section>
     </div>
-    <!--End row-->
-    </article>
-</section>
+</div>
+
 {% endblock %}
