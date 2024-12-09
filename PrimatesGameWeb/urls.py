@@ -10,4 +10,5 @@ urlpatterns = [
     path("register-primates/", views.primates, name="register-primates"),
     path("start-game/", views.start_game, name="start-game"),
     path("standby/", views.standby, name="standby"),
+    path("game_logout/", views.close_games, name="game_logout"),
 ]

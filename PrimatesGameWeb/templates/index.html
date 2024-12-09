@@ -89,7 +89,7 @@
             </thead>
             <tbody>
                 {% for experiment in experiments %}
-                <tr>
+                <tr id="row-{{ experiment.id }}">
                     <td>{{ experiment.id }}</td>
                     <td>{{ experiment.name }}</td>
                     <td>
@@ -109,10 +109,14 @@
                         </span>
                         {% endif %}
                     </td>
-                    <td>{{ experiment.instance }}</td>
+                    <td>{{ experiment.instance_name }}</td>
                     <td>
                         <button class="btn btn-sm btn-primary">View</button>
-                        <button class="btn btn-sm btn-danger">Stop</button>
+                        <!-- <button class="btn btn-sm btn-danger">Stop</button> -->
+                        {% if experiment.status == "Running" %}
+                        <button onclick="gameLogout('{{ experiment.instance }}')" class="btn btn-sm btn-danger">Stop</button>
+                        {% else %}
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

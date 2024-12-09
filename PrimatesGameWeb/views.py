@@ -2,6 +2,7 @@ from django.shortcuts import render , redirect
 from .forms import PrimatesForm , UserUpdateForm , StartGameForm
 from django.urls import reverse
 from django.http import JsonResponse
+import json
 from django.contrib.auth import get_user_model
 import requests
 from PrimatesGameAPI.models import RPiBoards , Primates , Games , RPiStates , GameInstances , GameConfig, Reports
@@ -13,8 +14,10 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.http import Http404
 from django.utils import timezone, dateformat
-
-
+from django.views.decorators.csrf import csrf_exempt,csrf_protect
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
+from PrimatesGameAPI.permissions import IsResearcher , IsRPiClient , IsAdmin ,  IsResearcherOrAdmin 
 
 # Create your views here.
 def home(request):
@@ -38,7 +41,7 @@ def home(request):
             {"title": "Card 2", "text": "Content 2", "color": "success"},
             {"title": "Card 3", "text": "Content 3", "color": "danger"},
         ],
-        "experiments": [{"id":i, "name": rpi_state.rpiboard ,"status": "Running" if rpi_state.is_occupied else "Standby", "instance": GameInstances.objects.filter(id=rpi_state.game_instance_running).first()} for i,rpi_state in enumerate(rpi_states)],
+        "experiments": [{"id":i, "name": rpi_state.rpiboard ,"status": "Running" if rpi_state.is_occupied else "Standby", "instance_name": GameInstances.objects.filter(id=rpi_state.game_instance_running).first(), "instance":rpi_state.game_instance_running} for i,rpi_state in enumerate(rpi_states)],
         "all_running": all_running,
         "all_primates_unavailable" : all_primates_unavailable,
     }
@@ -279,6 +282,39 @@ def profile(request, username):
 def standby(request):
     return render(request, "standby.html")
 
+#@csrf_exempt
+@csrf_protect
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def close_games(request):
-    
-    return None
+    if request.method == "POST":
+        #data = json.loads(request.body)
+        #gameinstance_id = data.get("game_instance")
+        game_instance_id = request.data.get("game_instance")
+        
+        if game_instance_id == None:
+            return JsonResponse({"message": "No experiment running!"})
+        else: 
+        
+            # GameInstance -> Update logout record
+            game_instance = GameInstances.objects.get(id=game_instance_id)
+            game_instance.logout_hist = datetime.now()
+            game_instance.save()
+            
+            
+            # Primate -> is_occupied = False
+            primate = game_instance.primate
+            primate.is_occupied = False
+            primate.save()
+            
+            # RPi State
+            rpi_state = RPiStates.objects.get(game_instance_running=game_instance_id)
+            rpi_state.stop_game = True
+            rpi_state.save()
+                # stop_game = True
+            
+            print(f"Logout {game_instance_id} has been clicked")
+            
+            # Return success response
+            return JsonResponse({"message": "Data received successfully."})
+    return JsonResponse({"error": "Invalid request."}, status=400)
