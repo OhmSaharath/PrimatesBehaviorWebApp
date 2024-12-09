@@ -38,7 +38,7 @@ def home(request):
             {"title": "Card 2", "text": "Content 2", "color": "success"},
             {"title": "Card 3", "text": "Content 3", "color": "danger"},
         ],
-        "experiments": [{"id":i, "name": rpi_state.rpiboard ,"status": "Running" if rpi_state.is_occupied else "Standby"} for i,rpi_state in enumerate(rpi_states)],
+        "experiments": [{"id":i, "name": rpi_state.rpiboard ,"status": "Running" if rpi_state.is_occupied else "Standby", "instance": GameInstances.objects.filter(id=rpi_state.game_instance_running).first()} for i,rpi_state in enumerate(rpi_states)],
         "all_running": all_running,
         "all_primates_unavailable" : all_primates_unavailable,
     }
@@ -122,8 +122,16 @@ def start_game(request):
             else:
                 pass #### WHAT IS IT -> TO BE CHECkED
 
+            # Create gameinstancename
+            date_time = timezone.now()
+            str_timezone = timezone.localtime(date_time).strftime("%Y-%m-%d_%H-%M")
+            primate_name = Primates.objects.get(id=primate).name
+            game_name = Games.objects.get(id=game).name
+            # Create Gamereportname
+            gameinstance_name = game_name + '_' +  primate_name + '_' + str_timezone
             
             data = {
+                'name' : gameinstance_name,
                'rpiboard': rpiboard,
                 'primate': primate,
                 'game': game,
@@ -270,3 +278,7 @@ def profile(request, username):
 
 def standby(request):
     return render(request, "standby.html")
+
+def close_games(request):
+    
+    return None

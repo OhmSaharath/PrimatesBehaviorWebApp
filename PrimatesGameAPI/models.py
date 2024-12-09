@@ -42,12 +42,16 @@ class GameConfig(models.Model):
 
 
 class GameInstances(models.Model):
+    name = models.CharField(max_length=255)
     game = models.ForeignKey(Games, on_delete=models.PROTECT)
     config = models.ForeignKey(GameConfig, on_delete=models.PROTECT, related_name="gameconfig")
     rpiboard = models.ForeignKey(RPiBoards, on_delete=models.PROTECT , related_name="rpiboard")
     primate = models.ForeignKey(Primates, on_delete=models.PROTECT , related_name="primate")
     login_hist = models.DateTimeField()
     logout_hist = models.DateTimeField(blank=True , null=True)
+    def __str__(self)-> str:
+	    return self.name
+ 
 
 
 class FixationGameConfig(models.Model):
