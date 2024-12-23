@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let actionBlocked = false;   // Flag to track if actions are blocked
     let Trials = 0;  // Global variable to count trials
     let Last10trialResults = [];  // Array to store results of last 10 trials
-
+    let config = null;
 
     // Fetch game configuration
     const configUrl = configUrlTemplate.replace('0', gameInstanceId);
@@ -43,12 +43,14 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
             if (data) {
+                console.log(data);
                 config = data;
             }
             resetInactivityTimer();  // Start the inactivity timer after config is fetched
         })
         .catch(error => console.error('Error fetching config:', error));
     
+    console.log(config);
 
     // Get the audio elements
     const correctSound = document.getElementById('correct-sound');
@@ -77,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function() {
             console.log(`Checking Duration: ${touchDuration}ms`);
     
             // If duration meets the requirement, trigger correct state
-            if (touchDuration >= config.botton_holdDuration) {
+            if (touchDuration >= config.button_holdDuration) {
                 console.log('Hold duration met, triggering correct state');
                 updateButtonColorAndTrials('green');
                 updateReport(gameInstanceId, 'correct', Trials);

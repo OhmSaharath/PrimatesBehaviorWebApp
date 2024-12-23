@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from .forms import PrimatesForm , UserUpdateForm , StartGameForm
+from .forms import PrimatesForm , UserUpdateForm , StartGameForm, FixationGameConfigForm
 from django.urls import reverse
 from django.http import JsonResponse
 import json
@@ -18,6 +18,7 @@ from django.views.decorators.csrf import csrf_exempt,csrf_protect
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from PrimatesGameAPI.permissions import IsResearcher , IsRPiClient , IsAdmin ,  IsResearcherOrAdmin 
+from django.template.loader import render_to_string
 
 # Create your views here.
 def home(request):
@@ -101,6 +102,9 @@ def start_game(request):
     
     if request.method == 'POST':
         form = StartGameForm(request.POST)
+        config_form = FixationGameConfigForm(request.POST)
+        
+
         if form.is_valid():
 
             
@@ -113,6 +117,8 @@ def start_game(request):
             token = Token.objects.get(user=user)
 
             #Serialize the form data
+            
+            print(form)
             
             rpiboard = form.cleaned_data['rpi_name']
             primate = form.cleaned_data['primate_name']
@@ -170,16 +176,24 @@ def start_game(request):
                 
                 ### This section depends on configuration type ###
                 
-                if game_configtype_id == 1: ## FixationGameConfig
+                if game_configtype_id == 1 and config_form.is_valid(): ## FixationGameConfig
+                    
+                    # Extract Fixation gameconfig
+                    
+                    interval_correct = config_form.cleaned_data['interval_correct']
+                    interval_incorrect = config_form.cleaned_data['interval_incorrect']
+                    interval_absent = config_form.cleaned_data['interval_absent']
+                    button_holdDuration = config_form.cleaned_data['button_holdDuration']
+
                 
                     #### Hard Code default  FixationGameConfig
                     data = {
                     'configtype': game_configtype_id,
                     'instance': game_instance_id,
-                    'interval_correct': 2,
-                    'interval_incorrect' : 5,
-                    'interval_absent' : 60,
-                    'botton_holdDuration':200 # ms
+                    'interval_correct': interval_correct,
+                    'interval_incorrect' : interval_incorrect,
+                    'interval_absent' : interval_absent,
+                    'button_holdDuration':button_holdDuration # ms
                     }
                     
                     # POST to /api/fixationconfigs
@@ -329,3 +343,18 @@ def close_games(request):
             # Return success response
             return JsonResponse({"message": "Data received successfully."})
     return JsonResponse({"error": "Invalid request."}, status=400)
+
+
+
+def get_game_config_form(request):
+    game_type = request.GET.get("game_type")
+    # Based on `game_type`, decide which form to return (if different forms are required).
+    # id -> string
+    # id = 1 : "Fixation_Task"
+    if game_type == str(1):  # Adjust condition based on your game types
+        form = FixationGameConfigForm()
+        form_html = render_to_string("partials/game_config_form.html", {"form": form})
+        return JsonResponse({"form_html": form_html})
+    else:
+        
+        return JsonResponse({"form_html": ""})

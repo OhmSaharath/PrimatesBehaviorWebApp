@@ -60,7 +60,7 @@ class FixationGameConfig(models.Model):
     interval_correct = models.IntegerField()
     interval_incorrect = models.IntegerField()
     interval_absent = models.IntegerField()
-    botton_holdDuration = models.IntegerField()
+    button_holdDuration = models.IntegerField()
 
 class Reports(models.Model):
     reportname =  models.CharField(max_length=50)

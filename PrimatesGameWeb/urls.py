@@ -11,4 +11,5 @@ urlpatterns = [
     path("start-game/", views.start_game, name="start-game"),
     path("standby/", views.standby, name="standby"),
     path("game_logout/", views.close_games, name="game_logout"),
+    path("get-game-config-form/", views.get_game_config_form, name="get_game_config_form"),
 ]

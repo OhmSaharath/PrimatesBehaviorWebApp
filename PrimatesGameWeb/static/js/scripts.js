@@ -1,3 +1,4 @@
+// Function to get CSRF token from cookies
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -15,7 +16,7 @@ function getCookie(name) {
 }
 
 
-
+// Function to handle game logout
 function gameLogout(instance) {
     const csrftoken = getCookie('csrftoken');
     fetch(gameLogoutUrl, {
@@ -37,7 +38,7 @@ function gameLogout(instance) {
     .catch(error => console.error('Error:', error));
 }
 
-
+// Backup function for game logout
 function gameLogout_back(instance){
 
     // Use AJAX to send signal to Django backend
@@ -50,3 +51,67 @@ function gameLogout_back(instance){
         game_instance: instance, 
     }));
 }
+
+
+// Function to dynamically load game configuration form based on selected game type
+document.addEventListener("DOMContentLoaded", function () {
+    const gameChoiceField = document.getElementById("id_game_name");
+    const configFormContainer = document.getElementById("gameConfigFormContainer");
+    const configForm = document.getElementById("gameConfigForm");
+
+
+    if (gameChoiceField) {  
+        console.log('waiting for change');
+
+        const gameType = gameChoiceField.value;
+
+        console.log(gameType);
+
+        if (gameType) {
+            fetch(`/get-game-config-form/?game_type=${gameType}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.form_html) {
+                        configForm.innerHTML = data.form_html; // Update the form
+                        configFormContainer.style.display = "block"; // Show the container
+                    } else {
+                        configFormContainer.style.display = "none"; // Hide the container
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching the configuration form:", error);
+                    alert("An error occurred while fetching the configuration form.");
+                });
+        } else {
+            configFormContainer.style.display = "none"; // Hide the container if no game is selected
+        }
+
+        gameChoiceField.addEventListener("change", function () {
+
+            const gameType = this.value;
+
+            console.log(gameType);
+
+            //const gameType = this.value; // Get the selected game type
+
+            if (gameType) {
+                fetch(`/get-game-config-form/?game_type=${gameType}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.form_html) {
+                            configForm.innerHTML = data.form_html; // Update the form
+                            configFormContainer.style.display = "block"; // Show the container
+                        } else {
+                            configFormContainer.style.display = "none"; // Hide the container
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching the configuration form:", error);
+                        alert("An error occurred while fetching the configuration form.");
+                    });
+            } else {
+                configFormContainer.style.display = "none"; // Hide the container if no game is selected
+            }
+        });
+    }
+});
