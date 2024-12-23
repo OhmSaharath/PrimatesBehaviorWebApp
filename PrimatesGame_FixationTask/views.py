@@ -68,12 +68,14 @@ def get_game_config(request,gameinstance):
                 'interval_correct': config.interval_correct,
                 'interval_incorrect': config.interval_incorrect,
                 'interval_absent': config.interval_absent,
+                'botton_holdDuration': config.botton_holdDuration,
             })
         else:
             return JsonResponse({
                 'interval_correct': 2,
                 'interval_incorrect': 5,
-                'interval_absent': 60
+                'interval_absent': 60,
+                'botton_holdDuration': 2000 # ms
             })  # Default values if no config is found
     except GameInstances.DoesNotExist:
         return JsonResponse({'error': 'Game instance not found'}, status=404)

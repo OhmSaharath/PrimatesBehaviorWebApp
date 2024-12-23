@@ -117,7 +117,7 @@ def start_game(request):
             rpiboard = form.cleaned_data['rpi_name']
             primate = form.cleaned_data['primate_name']
             game = form.cleaned_data['game_name']
-            report_id = form.cleaned_data['report_name']
+            report_id = int(form.cleaned_data['report_name'])
             config = get_config_id(game)
 
             if config == None:
@@ -148,12 +148,12 @@ def start_game(request):
                 'Content-Type': 'application/json'  # Adjust content type if necessary
             }
             # POST to /api/games-instances
-            url = request.build_absolute_uri(reverse('api:game-instance'))
+            instance_url = request.build_absolute_uri(reverse('api:game-instance'))
             
             # Make a POST request to your API endpoint
             # Send the POST request with the data and headers
-            response = requests.post(url, json=data, headers=headers)
-            print(primate)
+            response = requests.post(instance_url, json=data, headers=headers)
+            #print(primate)
             #Update Primate Status -> Use Django
             primate_obj = Primates.objects.get(id=primate)
             primate_obj.is_occupied = True
@@ -168,19 +168,26 @@ def start_game(request):
                 game_instance_id = response.json().get('id')
                 game_configtype_id = response.json().get('config')
                 
-                data = {
-               'configtype': game_configtype_id,
-                'instance': game_instance_id,
-                'interval_correct': 2,
-                'interval_incorrect' : 5,
-                'interval_absent' : 60
-                }
+                ### This section depends on configuration type ###
                 
-                # POST to /api/games-instances
-                url = request.build_absolute_uri(reverse('api:fixationconfigs'))
-                print(url)
+                if game_configtype_id == 1: ## FixationGameConfig
                 
-                response = requests.post(url, json=data, headers=headers)
+                    #### Hard Code default  FixationGameConfig
+                    data = {
+                    'configtype': game_configtype_id,
+                    'instance': game_instance_id,
+                    'interval_correct': 2,
+                    'interval_incorrect' : 5,
+                    'interval_absent' : 60,
+                    'botton_holdDuration':200 # ms
+                    }
+                    
+                    # POST to /api/fixationconfigs
+                    config_url = request.build_absolute_uri(reverse('api:fixationconfigs'))
+                    #print(url)
+                
+                
+                response = requests.post(config_url, json=data, headers=headers)
                 if response.status_code == 201:
                     ######### Initilize Report instance #########
                     date_time = timezone.now()
@@ -203,11 +210,14 @@ def start_game(request):
                         'gamereportname': gamereportname
                         }
                     
-                    # POST to /api/games-instances
-                    url = request.build_absolute_uri(reverse('api:fixationgamreport'))
-                    print(url)
+                    ### Report instance also depends on record type
+                    print(type(report_id))
+                    if report_id == 1: # FixationGameRecord
+                        # POST to /api/fixationgamreport
+                        report_url = request.build_absolute_uri(reverse('api:fixationgamreport'))
+                        #print(url)
                     
-                    response = requests.post(url, json=report_instance_data, headers=headers)
+                    response = requests.post(report_url, json=report_instance_data, headers=headers)
                     
                     if response.status_code == 201:
                         ################## Invoking the RPI board by updating model ###############
@@ -226,13 +236,13 @@ def start_game(request):
                     elif response.status_code == 401:
                         return JsonResponse({'errors': 'Unauthorized'})
                     else:
-                        print(response)
-                        return JsonResponse({'errors': 'something wrong'})
+                        print("Something wrong when creating gamerecord")
+                        return JsonResponse({'errors': "Something wrong when creating gamerecord"})
                 elif response.status_code == 401:
                     return JsonResponse({'errors': 'Unauthorized'})
                 else:
-                    print(response)
-                    return JsonResponse({'errors': 'something wrong'})
+                    print("Something wrong when creating gameconfiguration")
+                    return JsonResponse({'errors': 'Something wrong when creating gameconfiguration'})
                 # User is alreay authenthecated, we can now edit the model directly
                 
                 # Gameinstance created successful
@@ -243,10 +253,11 @@ def start_game(request):
             elif response.status_code == 401:
                 return JsonResponse({'errors': 'Unauthorized'})
             else:
-                print(response)
-                return JsonResponse({'errors': 'something wrong'})
+                print("Something wrong when creating gameinstance")
+                return JsonResponse({'errors': 'Something wrong when creating gameinstance'})
         else:
-            return JsonResponse({'errors': 'something wrong'})
+            print("Something wrong retriveing Form data")
+            return JsonResponse({'errors': 'Something wrong retriveing Form data'})
             
     
     

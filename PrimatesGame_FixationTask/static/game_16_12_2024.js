@@ -24,11 +24,11 @@ document.addEventListener("DOMContentLoaded", function() {
     updateButtonSize(buttonSize); // initialize button
 
 
-    //let config = {
-    //    interval_correct: 2,  // Default wait time for correct click
-    //    interval_incorrect: 5,  // Default wait time for incorrect click
-    //    interval_absent: 60  // Default wait time for absent click
-    //};
+    let config = {
+        interval_correct: 2,  // Default wait time for correct click
+        interval_incorrect: 5,  // Default wait time for incorrect click
+        interval_absent: 60  // Default wait time for absent click
+    };
 
     
     let inactivityTimer = null; // Variable to convert state of inactivity back to original
@@ -53,81 +53,54 @@ document.addEventListener("DOMContentLoaded", function() {
     // Get the audio elements
     const correctSound = document.getElementById('correct-sound');
     const incorrectSound = document.getElementById('incorrect-sound');
+    
+    // buttonclick -> Green
+    button.onclick = function(event) {
+        if (actionBlocked) return;  // Prevent action if blocked
+        console.log('correct')
+        event.stopPropagation();  // Prevent the background click event from firing
 
-    // Initialize a variable to track touch duration
-    let touchStartTime = null;
-    let accumulatedDuration = 0;
-    let durationCheckInterval = null; // Interval for checking accumulated duration
-    
-    // Correct case. Shared event handlers for touch and mouse
-    const correct_startHandler = (event) => {
-        event.preventDefault(); // Prevent default behavior
-        event.stopPropagation(); // Prevent event from propagating to other elements
-        touchStartTime = Date.now();
+        // update button
+        updateButtonColorAndTrials('green'); 
 
-        // Change the button color to orange while pressing
-        button.style.backgroundColor = 'orange';
-    
-        // Start checking the duration periodically
-        durationCheckInterval = setInterval(() => {
-            if (!touchStartTime) return; // Skip if there's no active touch
-            const currentTime = Date.now();
-            const touchDuration = currentTime - touchStartTime + accumulatedDuration;
-    
-            console.log(`Checking Duration: ${touchDuration}ms`);
-    
-            // If duration meets the requirement, trigger correct state
-            if (touchDuration >= config.botton_holdDuration) {
-                console.log('Hold duration met, triggering correct state');
-                updateButtonColorAndTrials('green');
-                updateReport(gameInstanceId, 'correct', Trials);
-                sendSignal(gameInstanceId);
-    
-                accumulatedDuration = 0;
-                touchStartTime = null; // Reset touch start time
-                clearInterval(durationCheckInterval); // Stop checking
-    
-                // Reset after correct state
-                setTimeout(() => {
-                    button.style.backgroundColor = 'yellow';
-                    actionBlocked = false;
-                    resetInactivityTimer();
-                }, config.interval_correct * 1000);
-            }
-        }, 100); // Check every 100ms (adjust as needed)
+        // populate reports
+        updateReport(gameInstanceId, 'correct', Trials)
+
+        // Activate the pump
+        sendSignal(gameInstanceId); // Call the function to send signal
+
+        // wait for "interval_correct" second then convert back to yellow
+        console.log('waitfor'+config.interval_correct+'second')
+        setTimeout(() => {
+            button.style.backgroundColor = 'yellow';
+            actionBlocked = false;  // Allow actions again after button reverts to yellow
+            resetInactivityTimer();  // Start the inactivity timer after config is fetched
+        }, config.interval_correct * 1000);  // Convert seconds to milliseconds
     };
-    
-    const correct_endHandler = (event) => {
-    event.preventDefault(); // Prevent default behavior
-    event.stopPropagation(); // Prevent event from propagating to other elements
-    if (touchStartTime) {
-        const touchEndTime = Date.now();
-        accumulatedDuration += touchEndTime - touchStartTime;
-        console.log(`Touch ended. Accumulated Duration: ${accumulatedDuration}ms`);
-        touchStartTime = null;
-        // Change the button color back to yellow after releasing
-        button.style.backgroundColor = 'yellow';
-    }
-
-    // Clear the duration checking interval
-    clearInterval(durationCheckInterval);
-    };
-
-    // Add event listeners for both touch and mouse events
-    button.addEventListener('mousedown', correct_startHandler);
-    button.addEventListener('mouseup', correct_endHandler);
-    button.addEventListener('touchstart', correct_startHandler);
-    button.addEventListener('touchend', correct_endHandler);
 
     // Special case, tolerance window -> Green
-    overlay.addEventListener('mousedown', correct_startHandler);
-    overlay.addEventListener('mouseup', correct_endHandler);
-    overlay.addEventListener('touchstart', correct_startHandler);
-    overlay.addEventListener('touchend', correct_endHandler);
+    overlay.onclick = function(event) {
+        if (actionBlocked) return;  // Prevent action if blocked
+        event.stopPropagation();  // Prevent the background click event from firing
+
+        // update button
+        updateButtonColorAndTrials('green');
+
+        // populate reports
+        updateReport(gameInstanceId, 'correct', Trials)
+
+        // Activate the pump
+        sendSignal(gameInstanceId); // Call the function to send signal
+
+        setTimeout(() => {
+            button.style.backgroundColor = 'yellow';
+            actionBlocked = false;  // Allow actions again after button reverts to yellow
+            resetInactivityTimer();  // Reset inactivity timer after button reverts to yellow
+        }, config.interval_correct * 1000);  // Convert seconds to milliseconds
+    };
 
     // Incorrect case, background click -> Red
-    const incorrect_Handler = (event) => {
-        event.preventDefault(); // Prevent default behavior
+    document.body.onclick = function() {
         if (actionBlocked) return;  // Prevent action if blocked
         console.log('incorrect')
 
@@ -139,9 +112,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
         console.log('waitfor'+config.interval_incorrect+'second')
 
-        // reset previos accumulated duration
-        accumulatedDuration = 0;
-
 
         // wait for "interval_incorrect" second then convert back to yellow
         setTimeout(() => {
@@ -149,13 +119,7 @@ document.addEventListener("DOMContentLoaded", function() {
             actionBlocked = false;  // Allow actions again after button reverts to yellow
             resetInactivityTimer();  // Start the inactivity timer after config is fetched
         }, config.interval_incorrect * 1000);  // Convert seconds to milliseconds
-    }
-
-    // Add event listeners for both touch and mouse events for incorrect state
-    document.body.addEventListener('mousedown', incorrect_Handler);
-    document.body.addEventListener('touchstart', incorrect_Handler);
-
-
+    };
 
     function updateButtonColorAndTrials(color) {
         button.style.backgroundColor = color;
