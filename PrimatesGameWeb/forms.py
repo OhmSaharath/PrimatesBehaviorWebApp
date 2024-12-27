@@ -1,4 +1,4 @@
-from PrimatesGameAPI.models import RPiBoards , Primates , Games , Reports, FixationGameConfig
+from PrimatesGameAPI.models import RPiBoards , Primates , Games , Reports, FixationGameConfig, FixationGameReport
 from django import forms 
 from django.contrib.auth import get_user_model
 from crispy_forms.helper import FormHelper
@@ -69,3 +69,10 @@ class FixationGameConfigForm(forms.ModelForm):
         self.fields['interval_incorrect'].initial = 5  # Default value for interval_incorrect
         self.fields['interval_absent'].initial = 60  # Default value for interval_absent
         self.fields['button_holdDuration'].initial = 200  # Default value for botton_holdDuration
+        
+class ReportFilterForm(forms.Form):
+    game = forms.ModelChoiceField(queryset=Games.objects.all(), required=True)
+    start_date = forms.DateTimeField(widget=forms.TextInput(attrs={'type': 'datetime-local'}), required=True)
+    end_date = forms.DateTimeField(widget=forms.TextInput(attrs={'type': 'datetime-local'}), required=True)
+    board = forms.ModelChoiceField(queryset=RPiBoards.objects.all(), required=False, label="RPi Board")
+    primate = forms.ModelChoiceField(queryset=Primates.objects.all(), required=False, label="Primate")

@@ -72,6 +72,8 @@ class FixationGameReport(models.Model):
     report = models.ForeignKey(Reports, on_delete=models.PROTECT)
     instance = models.OneToOneField(GameInstances, on_delete=models.PROTECT,related_name="fixationreportgameinstance")
     gamereportname = models.CharField(max_length=50, blank=True , null=True)
+    def __str__(self)-> str:
+	    return self.gamereportname
     
 class FixationGameResult(models.Model):
     fixationreport = models.ForeignKey(FixationGameReport, on_delete=models.PROTECT)
@@ -79,4 +81,6 @@ class FixationGameResult(models.Model):
     feedback = models.BooleanField()
     feedbacktype = models.CharField(max_length=10)
     buttonsize = models.FloatField()
+    def __str__(self)-> str:
+	    return self.fixationreport.gamereportname
     

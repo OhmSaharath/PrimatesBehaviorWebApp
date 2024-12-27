@@ -1,0 +1,42 @@
+
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Dashboard - Home{% endblock %}
+
+{% block content %}
+<div class="card mt-4">
+    <div class="card-body">
+        <div class="center_header">
+            <h1>Generate Report</h1>
+        </div>
+        <section>
+            <article>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit">Filter Reports</button>
+                </form>
+
+                {% if reports %}
+                <h2>Select a Report</h2>
+                <form method="get" action="{% url 'webapp:generate_csv' %}">
+                    <label for="report-select">Available Reports:</label>
+                    <select name="report_id" id="report-select" required>
+                        {% for report in reports %}
+                        <option value="{{ report.id }}">{{ report.gamereportname }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" style="background-color: green; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                        Download Selected Report
+                    </button>
+                </form>
+                {% else %}
+                    {% if no_reports_message %}
+                    <p style="color: red; font-weight: bold;">{{ no_reports_message }}</p>
+                    {% endif %}
+                {% endif %}
+            </article>
+        </section>
+    </div>
+</div>
+{% endblock %}

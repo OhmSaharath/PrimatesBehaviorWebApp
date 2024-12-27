@@ -1,11 +1,11 @@
 from django.shortcuts import render , redirect
-from .forms import PrimatesForm , UserUpdateForm , StartGameForm, FixationGameConfigForm
+from .forms import PrimatesForm , UserUpdateForm , StartGameForm, FixationGameConfigForm, ReportFilterForm
 from django.urls import reverse
 from django.http import JsonResponse
 import json
 from django.contrib.auth import get_user_model
 import requests
-from PrimatesGameAPI.models import RPiBoards , Primates , Games , RPiStates , GameInstances , GameConfig, Reports
+from PrimatesGameAPI.models import RPiBoards , Primates , Games , RPiStates , GameInstances , GameConfig, Reports, FixationGameReport, FixationGameResult
 from django.contrib import messages
 from datetime import datetime
 from PrimatesGameAPI import views as APIviews
@@ -19,6 +19,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from PrimatesGameAPI.permissions import IsResearcher , IsRPiClient , IsAdmin ,  IsResearcherOrAdmin 
 from django.template.loader import render_to_string
+import csv
+
 
 # Create your views here.
 def home(request):
@@ -358,3 +360,60 @@ def get_game_config_form(request):
     else:
         
         return JsonResponse({"form_html": ""})
+    
+    
+def report_page(request):
+    form = ReportFilterForm()
+    reports = []
+    no_reports_message = ""
+
+    if request.method == 'POST':
+        form = ReportFilterForm(request.POST)
+        if form.is_valid():
+            game = form.cleaned_data['game']
+            start_date = form.cleaned_data['start_date']
+            end_date = form.cleaned_data['end_date']
+            board = form.cleaned_data.get('board')
+            primate = form.cleaned_data.get('primate')
+
+            # Filter GameInstances by game, time range, board, and primate
+            game_instances = GameInstances.objects.filter(
+                game=game,
+                login_hist__range=(start_date, end_date)
+            )
+
+            if board:
+                game_instances = game_instances.filter(rpiboard=board)
+            if primate:
+                game_instances = game_instances.filter(primate=primate)
+
+            # Get FixationGameReports linked to the filtered GameInstances
+            reports = FixationGameReport.objects.filter(instance__in=game_instances)
+            
+            if not reports:
+                no_reports_message = "No reports found for the selected filters."
+
+    return render(request, 'reports.html', {'form': form, 'reports': reports, 'no_reports_message': no_reports_message})
+
+
+def generate_csv(request):
+    report_id = request.GET.get('report_id')
+    if not report_id:
+        return HttpResponse("No report selected.", status=400)
+
+    try:
+        fixation_report = FixationGameReport.objects.get(pk=report_id)
+        results = FixationGameResult.objects.filter(fixationreport=fixation_report)
+
+        # Create the CSV response
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="{fixation_report.gamereportname}.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow(['Timestamp', 'Feedback', 'Feedback Type', 'Button Size'])
+        for result in results:
+            writer.writerow([result.timestamp, result.feedback, result.feedbacktype, result.buttonsize])
+
+        return response
+    except FixationGameReport.DoesNotExist:
+        return HttpResponse("Invalid report ID.", status=404)
