@@ -233,28 +233,26 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateButtonSize(sizePercentage) {
         const containerWidth = gameContainer.clientWidth;
         const containerHeight = gameContainer.clientHeight;
-    
-        // Calculate the smaller dimension of the container for a square button
-        const containerMinDimension = Math.min(containerWidth, containerHeight);
-    
-        const newSize = (containerMinDimension * sizePercentage) / 100;
-    
+        const newWidth = (containerWidth * sizePercentage) / 100;
+        const newHeight = (containerHeight * sizePercentage) / 100;
+
         // Ensure the button does not shrink below the minimum size
-        const finalSize = newSize < minButtonSizePx ? minButtonSizePx : newSize;
+        const finalWidth = newWidth < minButtonSizePx ? minButtonSizePx : newWidth;
+        const finalHeight = newHeight < minButtonSizePx ? minButtonSizePx : newHeight;
 
-        button.style.width = `${finalSize}px`;
-        button.style.height = `${finalSize}px`;
+        button.style.width = `${finalWidth}px`;
+        button.style.height = `${finalHeight}px`;
 
-        // Update the overlay size and position for the click area
-        if (finalSize < minClickAreaPx) {
-            const overlaySize = Math.max(minClickAreaPx, finalSize);
+        // Update the overlay size and position
+        if (finalWidth < minClickAreaPx || finalHeight < minClickAreaPx) {
+            const overlaySize = Math.max(minClickAreaPx, Math.max(finalWidth, finalHeight));
             overlay.style.width = `${overlaySize}px`;
             overlay.style.height = `${overlaySize}px`;
-            overlay.style.left = `${parseFloat(button.style.left) + (finalSize - overlaySize) / 2}px`;
-            overlay.style.top = `${parseFloat(button.style.top) + (finalSize - overlaySize) / 2}px`;
+            overlay.style.left = `${parseFloat(button.style.left) + (finalWidth - overlaySize) / 2}px`;
+            overlay.style.top = `${parseFloat(button.style.top) + (finalHeight - overlaySize) / 2}px`;
             overlay.style.pointerEvents = 'auto';  // Enable pointer events
         } else {
-            overlay.style.pointerEvents = 'none';  // Disable pointer events
+            overlay.style.pointerEvents = 'none';  // Disable pointer events in case of button larger than 0.5 x 0.5 cm
             overlay.style.width = '0px';
             overlay.style.height = '0px';
         }
