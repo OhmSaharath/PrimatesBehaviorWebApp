@@ -1,3 +1,5 @@
+Temporary user data for website prototype development.
+
 Superuser
     username : admin
     password : @dmin1234
