@@ -2,11 +2,12 @@
 
 ### An improvement to Marmoset Experimental Behavioral Instrument (MXBI) Platform
 
+## Behavioral and Cognitive Neuroscience Lab : Faculty of Medicine at Chulalongkorn University
+
 This project aims to replicate and enhance the work conducted by A. Calapai et al. (2022).
 
 [Flexible auditory training, psychophysics, and enrichment of common marmosets with an automated, touchscreen-based system (A. Calapai, J. Cabrera-Moreno, T. Moser & M. Jeschke)](https://www.nature.com/articles/s41467-022-29185-9)
 
-## Behavioral and Cognitive Neuroscience Lab : Faculty of Medicine at Chulalongkorn University
 
 ## Overview
 
