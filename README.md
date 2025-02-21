@@ -240,10 +240,17 @@ The core components of this project are listed as follows:
 - User authentication/authorization application (via djoser and Django REST framework)
 - Tasks application
 
-Some of the core function of the Web application platform
+#### User Clients
 
+User clients are researchers and observers who can access the web application remotely to start or stop the experiment on each device, monitor the status of the experiment, or download reports.
 
-- User authentication/authorization with tokenization, session management.
+With the convenience of the Django template language, the web application's front end can update content dynamically from the database.
+
+The Django Template Language (DTL) is a built-in templating system in Django used to generate dynamic HTML content. It allows developers to embed Python-like expressions inside HTML files while maintaining separation between logic and presentation.
+
+Some of the core function of the Web application platform on user clients side:
+
+- User authentication/authorization with tokenization, session management.</br>
 <img src="./img/login.png" alt="login" width="300"/>
 
 - Remotely controlled experiments on the edge device with customized configurations for each task.
@@ -255,3 +262,52 @@ Some of the core function of the Web application platform
 
 - Report generation: Support filtering by date, tasks, and optionally by instruments and primates.
 <img src="./img/reportgeneration.png" alt="reportgeneration" />
+
+
+#### Device Clients
+
+Device clients, also known as cage-based devices in this project, are Raspberry Pi-based systems that also gain access to the web application, but as RPiClients users. The token from this user allows the server to grant permission for each device client to perform CRUD operations via APIs.
+
+<img src="./img/userclientflow.png" alt="userclientflow" />
+
+The device clients are installed with Python scripts that leverage Selenium to automate the Chromium web browser.
+
+When the system is booted, it is automatically logged in with its own credentials, connects to the web application, and enters power-saving mode, waiting for instructions.
+
+The Python script keeps querying its own status at fixed intervals. When the user client makes an experiment request, the device switches to the corresponding task.
+
+Also, the GPIOs are manipulated according to status updates from the database, and when the task sends an update request for each GPIO, the system sends a PATCH operation to update its own state.
+
+## Task: Experiment Application
+
+Tasks for each experiment can be built using only plain JavaScript, with the help of the Django template language. Each task can use AJAX to create dynamic and interactive web pages, allowing data to be exchanged between the web browser and the server asynchronously, without reloading the entire page.
+
+### Fixation Task
+
+Our first implemented task is the fixation task. a fixation task refers to an experimental task designed to study visual attention, eye movements, cognitive processes and neural mechanisms involved in gaze control, decision-making, and perception.
+
+
+The goal of the training was to instruct common marmosets to interact with the touchscreen in order to receive a liquid reward (fruit juice) from the device’s mouthpiece. 
+
+In order to receive a liquid reward, a primate must touch inside the button for a short period of time (due to touchscreen sensitivity). After that, it transitions to the "correct" state (turns to a green button), and the primate receives a liquid reward.
+
+The other state is 'incorrect' (turns to a red button), which can occur in two cases.
+- A primate touched the background of the screen, missing the button.
+- The button is ignored for a fixed duration.
+
+In both cases, the output is recorded in the database.
+
+
+<img src="./img/fixation1.png" alt="fixation1" /></br>
+
+
+Logic of the task
+
+1. Reduction in size of the button: The size of the button will be reduced by a fixed percentage of the initial size (which can be configured) if 9 out of 10 recent trials are in the 'correct' state. At the start of the trial, the button will occupy 95% of the screen.
+
+2. Randomization of the positions: After each state, the button is repositioned to a random point within the boundary of the screen.
+
+3. Size threshold and overlay: The button cannot be reduced indefinitely. At a certain threshold (0.5 cm), it will maintain the same size. A transparent window is created around the button to reduce noise.
+
+
+#### Now our monkey can learn how to use a touchscreen!
