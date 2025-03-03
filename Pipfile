@@ -8,9 +8,12 @@ django = "*"
 djangorestframework = "*"
 djangorestframework-xml = "*"
 djoser = "*"
+django-crispy-forms = "*"
+crispy-bootstrap4 = "*"
+mysqlclient = "*"
+pytz = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.12"
-
