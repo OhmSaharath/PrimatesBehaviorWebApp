@@ -97,6 +97,15 @@ class SingleGameInstanceView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GamesInstancesSerializer
     permission_classes = (IsAuthenticated|IsAdmin|IsResearcher|IsRPiClient,)
     
+class GameConfigView(generics.ListCreateAPIView):
+    queryset = GameConfig.objects.all()
+    serializer_class = GameConfigSerializer
+    permission_classes = (IsAuthenticated|IsAdmin|IsResearcher,)
+class SingleGameConfigView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = GameConfig.objects.all()
+    serializer_class = GameConfigSerializer
+    permission_classes = (IsAuthenticated|IsAdmin|IsResearcher,)
+    
 class FixationGameConfigView(generics.ListCreateAPIView):
     queryset = FixationGameConfig.objects.all()
     serializer_class = FixationGameConfigSerializer
@@ -105,6 +114,16 @@ class FixationGameConfigView(generics.ListCreateAPIView):
 class SingleFixationGameConfigView(generics.RetrieveUpdateDestroyAPIView):
     queryset = FixationGameConfig.objects.all()
     serializer_class = FixationGameConfigSerializer
+    permission_classes = (IsAuthenticated|IsAdmin|IsResearcher,)
+    
+class ReportView(generics.ListCreateAPIView):
+    queryset = Reports.objects.all()
+    serializer_class = ReportsSerializer
+    permission_classes = (IsAuthenticated|IsAdmin|IsResearcher,)
+    
+class SingleReportView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Reports.objects.all()
+    serializer_class = ReportsSerializer
     permission_classes = (IsAuthenticated|IsAdmin|IsResearcher,)
     
 class FixationGameReportView(generics.ListCreateAPIView):

@@ -1,0 +1,12 @@
+site_name: Primates Behavior WebApp Documentation
+
+theme:
+  name: mkdocs  # You can change the theme (e.g., mkdocs, readthedocs, material)
+nav:
+  - Home: index.md
+  - Tour: 
+    - "WebApp Explained": tour/webapp_explained.md
+    - "Concept Explained": tour/concept_explained.md
+  - Tutorial:
+    - "Adding Tasks": tutorials/adding_tasks.md
+
