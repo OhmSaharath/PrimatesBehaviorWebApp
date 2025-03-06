@@ -8,6 +8,9 @@ This project aims to replicate and enhance the work conducted by A. Calapai et a
 
 [Flexible auditory training, psychophysics, and enrichment of common marmosets with an automated, touchscreen-based system (A. Calapai, J. Cabrera-Moreno, T. Moser & M. Jeschke)](https://www.nature.com/articles/s41467-022-29185-9)
 
+### Full documentation avialable at 
+https://beacon-lab-med-chula.github.io/PrimatesBehaviorWebApp/
+
 
 ## Overview
 
