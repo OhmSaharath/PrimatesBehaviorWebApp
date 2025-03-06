@@ -1,6 +1,7 @@
 site_name: Primates Behavior WebApp Documentation
 
-site_url: https://beacon-lab-med-chula.github.io/PrimatesBehaviorWebApp/
+site_url: https://beacon-lab-med-chula.github.io/PrimatesBehaviorWebApp/ # Lab site
+# site_url: https://rsongphon.github.io/PrimatesBehaviorWebApp/ 
 
 theme:
   name: mkdocs  # You can change the theme (e.g., mkdocs, readthedocs, material)
