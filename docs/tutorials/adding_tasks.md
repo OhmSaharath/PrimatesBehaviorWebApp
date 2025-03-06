@@ -141,6 +141,8 @@ sudo mysql -u root -p
 
 Password for root leaves as blank
 
+### ตรงนี้ค้องสร้าง user admingame ด้วย <<--- เพิ่ม document
+
 Create a new database
 
 ```
