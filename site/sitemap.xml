@@ -1,3 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://github.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/tree/gh-pages/</loc>
+         <lastmod>2025-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/tree/gh-pages/tour/concept_explained/</loc>
+         <lastmod>2025-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/tree/gh-pages/tour/webapp_explained/</loc>
+         <lastmod>2025-03-06</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/tree/gh-pages/tutorials/adding_tasks/</loc>
+         <lastmod>2025-03-06</lastmod>
+    </url>
 </urlset>

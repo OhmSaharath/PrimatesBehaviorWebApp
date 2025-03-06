@@ -179,7 +179,7 @@ Login as admin (username and password are in user.txt in root directory of the p
 
 Check if database has all table present.
 
-<img src="/images/adminpage.png" alt="adminpage" width="400">
+<img src="images/adminpage.png" alt="adminpage" width="400">
 
 ## Step 3: Create a feature branch.
 
