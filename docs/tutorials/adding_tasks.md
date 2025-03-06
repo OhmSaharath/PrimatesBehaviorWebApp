@@ -181,7 +181,6 @@ Check if database has all table present.
 
 <img src="/images/adminpage.png" alt="adminpage" width="400">
 
-
 ## Step 3: Create a feature branch.
 
 Creating a feature branch allows you to experiment with your code and create tasks as you like. Once you've finished testing, you can merge your code back into the original main branch.
