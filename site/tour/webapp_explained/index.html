@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>WebApp Explained - Primates Behavior WebApp Documentation</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../..">Primates Behavior WebApp Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../.." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Tour</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">WebApp Explained</a>
+</li>
+                                    
+<li>
+    <a href="../concept_explained/" class="dropdown-item">Concept Explained</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Tutorial</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../../tutorials/adding_tasks/" class="dropdown-item">Adding Tasks</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../.." class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../concept_explained/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#web-application-high-level-explained" class="nav-link">Web Application High Level Explained</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#overview" class="nav-link">Overview</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#server" class="nav-link">Server</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#database" class="nav-link">Database</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#web-application" class="nav-link">Web application</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#user-clients" class="nav-link">User Clients</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#device-clients" class="nav-link">Device Clients</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="web-application-high-level-explained">Web Application High Level Explained</h1>
+<p>Delivering diverse tasks to analyze the phenotypic characteristics of non-human primates, as well as their complex nervous systems, necessitates distinct configurations of both hardware and software, each tailored to the specific requirements of the task.</p>
+<p>For this reason, combined with the flexibility of the GPIO on the Raspberry Pi system, which enables reconfigurable peripherals, we have designed the web application system with the idea of modularity to allow scalability of the experiments.</p>
+<p>The idea is to use the Django framework to gain access to functions such as authentication, information retrieval from a database, and cookie management.</p>
+<h1 id="overview">Overview</h1>
+<p><img src="/images/WebAppDiagram.jpg" alt="webappdiagram" /></p>
+<p>The web application is devided into three sections.</p>
+<ul>
+<li>Server: Host the web application logic as well as the database server.</li>
+<li>User Clients: Researcher devices that access the web application's functions via a web browser.</li>
+<li>Device Clients: A cage-based device embedded with a Python script to automate the web browser for accessing the experimental application, manipulate the GPIO of the integrated system, and invoke API calls to the server backend to perform CRUD operations on the database.</li>
+</ul>
+<h1 id="server">Server</h1>
+<h2 id="database">Database</h2>
+<p>To centalize the system and allow mutiple intruments to work simutinueously. We have stored the state of the entire system in the database server.</p>
+<p>For instance, we reference each cage-based device in the RPIBOARDS table, storing its name, IP address, and other relevant information. We can define this using a Django model like this:</p>
+<pre><code>class RPiBoards(models.Model):
+    board_name = models.CharField(max_length=255, default=&quot;&quot;)  
+    ip_address = models.GenericIPAddressField(protocol='IPv4') 
+    ssid = models.CharField(max_length=32 , blank=True , null=True) 
+    ssid_password = models.CharField(max_length=255, blank=True , null=True)  
+    def __str__(self)-&gt; str:
+        return self.board_name
+
+</code></pre>
+<p>We also have the RPISTATES table for each device, which allows the instrument to track whether or not to run or end a task. This table also stores the state of the GPIO, enabling the edge device (the Raspberry Pi, in this case) to manipulate the peripherals.</p>
+<pre><code>class RPiStates(models.Model):
+    rpiboard = models.OneToOneField(RPiBoards, on_delete=models.CASCADE)
+    is_occupied =  models.BooleanField(default=False)
+    game_instance_running = models.IntegerField(default=None,  blank=True , null=True) 
+    start_game =  models.BooleanField(default=False)
+    stop_game =  models.BooleanField(default=False)
+    motor = models.BooleanField(default=False)
+    def __str__(self)-&gt; str:
+        return self.rpiboard.board_name
+</code></pre>
+<p>When it comes to the tasks, each device runs a different experiment instance (which may also involve different tasks). It is crucial to keep track of these states to manage the simultaneous operation of multiple instruments.</p>
+<p>An example of the GAMEINSTANCE table allows us to keep track of each task's information, such as which instrument is being used, which task is being performed, which primate is involved, the configuration profile, and other relevant details.</p>
+<pre><code>class GameInstances(models.Model):
+    name = models.CharField(max_length=255)
+    game = models.ForeignKey(Games, on_delete=models.PROTECT)
+    config = models.ForeignKey(GameConfig, on_delete=models.PROTECT, related_name=&quot;gameconfig&quot;)
+    rpiboard = models.ForeignKey(RPiBoards, on_delete=models.PROTECT , related_name=&quot;rpiboard&quot;)
+    primate = models.ForeignKey(Primates, on_delete=models.PROTECT , related_name=&quot;primate&quot;)
+    login_hist = models.DateTimeField()
+    logout_hist = models.DateTimeField(blank=True , null=True)
+    def __str__(self)-&gt; str:
+        return self.name
+</code></pre>
+<p>Another crucial part is the experiment result of each task. This web application platform supports report generation, so we need to design the database carefully to ensure that the results of each task instance are stored properly.</p>
+<p>One way we can do this is by creating a REPORT table to separate each task's report. We would then create two additional tables based on the task: one table for the instance of the report and another table to store the actual result of the task.</p>
+<pre><code>class Reports(models.Model):
+    reportname =  models.CharField(max_length=50)
+    game = models.ForeignKey(Games, on_delete=models.PROTECT)
+    def __str__(self)-&gt; str:
+        return self.reportname
+
+class FixationGameReport(models.Model):
+    report = models.ForeignKey(Reports, on_delete=models.PROTECT)
+    instance = models.OneToOneField(GameInstances, on_delete=models.PROTECT,related_name=&quot;fixationreportgameinstance&quot;)
+    gamereportname = models.CharField(max_length=50, blank=True , null=True)
+    def __str__(self)-&gt; str:
+        return self.gamereportname
+
+class FixationGameResult(models.Model):
+    fixationreport = models.ForeignKey(FixationGameReport, on_delete=models.PROTECT)
+    timestamp = models.DateTimeField()
+    feedback = models.BooleanField()
+    feedbacktype = models.CharField(max_length=10)
+    buttonsize = models.FloatField()
+    def __str__(self)-&gt; str:
+        return self.fixationreport.gamereportname
+
+</code></pre>
+<h2 id="web-application">Web application</h2>
+<p>The web application is powered by the Django framework. The reason for this is that having a clear separation between the different parts allows the system to scale for various tasks. By separating application servers, we can create the logic for multiple tasks without interfering with each other. Another benefit is that Django promotes the grouping of related functionality into reusable "applications" and, at a lower level, organizes related code into modules.</p>
+<p>The core components of this project are listed as follows:</p>
+<ul>
+<li>Web appplication logic</li>
+<li>API server</li>
+<li>User authentication/authorization application (via djoser and Django REST framework)</li>
+<li>Tasks application</li>
+</ul>
+<h2 id="user-clients">User Clients</h2>
+<p>User clients are researchers and observers who can access the web application remotely to start or stop the experiment on each device, monitor the status of the experiment, or download reports.</p>
+<p>With the convenience of the Django template language, the web application's front end can update content dynamically from the database.</p>
+<p>The Django Template Language (DTL) is a built-in templating system in Django used to generate dynamic HTML content. It allows developers to embed Python-like expressions inside HTML files while maintaining separation between logic and presentation.</p>
+<p>Some of the core function of the Web application platform on user clients side:</p>
+<ul>
+<li>
+<p>User authentication/authorization with tokenization, session management.</br>
+<img src="/images/login.png" alt="login" width="300"/></p>
+</li>
+<li>
+<p>Remotely controlled experiments on the edge device with customized configurations for each task.
+<img src="/images/startgame.png" alt="startgame" /></p>
+</li>
+<li>
+<p>Dynamically update the state of each device in real-time, observe the experiment results, and end the session.
+<img src="/images/state1.png" alt="state1" />
+<img src="/images/state2.png" alt="state2" /></p>
+</li>
+<li>
+<p>Report generation: Support filtering by date, tasks, and optionally by instruments and primates.
+<img src="/images/reportgeneration.png" alt="reportgeneration" /></p>
+</li>
+</ul>
+<h2 id="device-clients">Device Clients</h2>
+<p>Device clients, also known as cage-based devices in this project, are Raspberry Pi-based systems that also gain access to the web application, but as RPiClients users. The token from this user allows the server to grant permission for each device client to perform CRUD operations via APIs.</p>
+<p><img src="/images/userclientflow.png" alt="userclientflow" /></p>
+<p>The device clients are installed with Python scripts that leverage Selenium to automate the Chromium web browser.</p>
+<p>When the system is booted, it is automatically logged in with its own credentials, connects to the web application, and enters power-saving mode, waiting for instructions.</p>
+<p>The Python script keeps querying its own status at fixed intervals. When the user client makes an experiment request, the device switches to the corresponding task.</p>
+<p>Also, the GPIOs are manipulated according to status updates from the database, and when the task sends an update request for each GPIO, the system sends a PATCH operation to update its own state.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

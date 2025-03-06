@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Adding Tasks - Primates Behavior WebApp Documentation</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../..">Primates Behavior WebApp Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../.." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Tour</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../../tour/webapp_explained/" class="dropdown-item">WebApp Explained</a>
+</li>
+                                    
+<li>
+    <a href="../../tour/concept_explained/" class="dropdown-item">Concept Explained</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Tutorial</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">Adding Tasks</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../../tour/concept_explained/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" class="nav-link disabled">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#adding-tasks" class="nav-link">Adding Tasks</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#requirement" class="nav-link">Requirement</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#step-1-get-the-project-codebase" class="nav-link">Step 1: Get The Project Codebase.</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#step-2-set-up-the-enviroment-for-development" class="nav-link">Step 2: Set up the enviroment for development.</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-bs-level="1"><a href="#_1" class="nav-link">(ตรงนี้ต้องเทสเยอะๆๆๆๆๆๆๆๆๆ)</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#step-3-create-a-feature-branch" class="nav-link">Step 3: Create a feature branch.</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#step-3-add-new-applications-tasks-to-the-web-application" class="nav-link">Step 3: Add new applications (tasks) to the web application.</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#step-4-implement-the-logic-for-the-core-function" class="nav-link">Step 4 : Implement the logic for the core function.</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="adding-tasks">Adding Tasks</h1>
+<p>When it comes to adding tasks, this platform aims to reduce the workload of researchers as much as possible.</p>
+<p>There is still a need for some backend Django implementation, but most of it will be provided with template code, which you'll need to modify slightly to make it work.</p>
+<p>So, simply speaking, the step that needs to be done is</p>
+<ul>
+<li>Get the project codebase on your local PC (fork the repository).</li>
+<li>Set up the enviroment for development.</li>
+<li>Create a feature branch to experiment with your ideas.</li>
+<li>Add new applications (tasks) to the web application.</li>
+<li>Implement the logic for the core function of the task in the Django view.</li>
+<li>Map the URL pattern.</li>
+<li>Implement the task logic.</li>
+<li>(To be update........)</li>
+</ul>
+<h2 id="requirement">Requirement</h2>
+<ul>
+<li><a href="https://git-scm.com/">Git</a></li>
+<li><a href="https://pipenv.pypa.io/en/latest/">Pipenv</a></li>
+</ul>
+<h2 id="step-1-get-the-project-codebase">Step 1: Get The Project Codebase.</h2>
+<p>The first step is to get the project codebase on your local machine.</p>
+<p>There are two scenarios, depending on whether or not you have access to the repository.</p>
+<p>As an external contributor, you're contributing to an open-source project, so you don't have write access,follow these steps:</p>
+<h3 id="scenario-1-you-have-access-to-the-repository-team-member">Scenario 1: You Have Access to the Repository (Team Member)</h3>
+<p>If you are member of the organization, follow these steps.</p>
+<h4 id="step-1-clone-the-repository">Step 1: Clone the Repository</h4>
+<p>First, clone the repository to your local machine:</p>
+<pre><code>git clone &lt;repository_url&gt;
+
+</code></pre>
+<p>Then, navigate into the project directory:</p>
+<pre><code>cd PrimatesBehaviorWebApp
+</code></pre>
+<h3 id="scenario-2-you-dont-have-push-access-external-contributor">Scenario 2: You Don't Have Push Access (External Contributor)</h3>
+<h4 id="step-1-fork-the-repository">Step 1: Fork the Repository</h4>
+<ul>
+<li>Go to the <a href="https://github.com/rsongphon/PrimatesBehaviorWebApp">project repository page</a>.</li>
+<li>Click the "Fork" button in the upper right corner of the screen. (this creates a copy of the repository under your account).</li>
+</ul>
+<h4 id="step-2-clone-your-fork">Step 2: Clone Your Fork</h4>
+<p>Copy the forked repository to your local machine:</p>
+<pre><code>git clone https://github.com/rsongphon/PrimatesBehaviorWebApp.git
+
+</code></pre>
+<p>Move into the project directory:</p>
+<pre><code>cd PrimatesBehaviorWebApp
+
+</code></pre>
+<h3 id="step-31-add-the-original-repository-as-an-upstream">Step 3.1: Add the Original Repository as an Upstream</h3>
+<p>To keep your fork updated with the original repository:</p>
+<pre><code>git remote add upstream https://github.com/rsongphon/PrimatesBehaviorWebApp.git
+</code></pre>
+<h4 id="step-2-create-a-new-branch">Step 2: Create a New Branch</h4>
+<p>Before making changes, create a new branch for your work:</p>
+<pre><code>git checkout -b my-feature-branch
+</code></pre>
+<h2 id="step-2-set-up-the-enviroment-for-development">Step 2: Set up the enviroment for development.</h2>
+<h1 id="_1">(ตรงนี้ต้องเทสเยอะๆๆๆๆๆๆๆๆๆ)</h1>
+<p>This project reqired some packages and mock-up database in your local machine in order to make the whole web app running so you can experiment with your feature.</p>
+<p>After you have pipenv in you system, install all dependencies for this project.</p>
+<pre><code>pipenv sync
+</code></pre>
+<p>After that, activate the environment.</p>
+<pre><code>pipenv shell
+</code></pre>
+<p>Create and imported MySQL database on the target machine</p>
+<p>In the project directory, there is a file called database_backup.sql. This file will be used to create a mock-up database with the correct schema, ensuring that the web application runs properly.</p>
+<p>First, install Mysql server with mysqlclient package, depending on machine. </p>
+<p>Refer to this <a href="https://pypi.org/project/mysqlclient/">documentation</a> in the "Install" section for details on each operating system.</p>
+<p>The MySQL server should run automatically after installation. If it doesn't, start the service manually, depending on your system.</p>
+<h5 id="windows">Windows</h5>
+<p>Open Command Prompt as Administrator.
+Run the following command:</p>
+<pre><code>net start mssqlserver
+</code></pre>
+<h5 id="linux-ubuntu-centos-etc">Linux (Ubuntu, CentOS, etc.):</h5>
+<p>Open a terminal and run the following command:</p>
+<pre><code>sudo systemctl start mssql-server
+</code></pre>
+<h5 id="macos-homebrew">macOS (Homebrew):</h5>
+<pre><code>brew services start mysql
+</code></pre>
+<p>Log in to the MySQL server on the target machine as root user:</p>
+<p>This process requires administrative permissions, so you will need to grant them depending on your system (such as sudo for linux/mac).</p>
+<h5 id="macoslinux">macOS/Linux:</h5>
+<pre><code>sudo mysql -u root -p
+</code></pre>
+<p>Password for root leaves as blank</p>
+<h3 id="user-admingame-document">ตรงนี้ค้องสร้าง user admingame ด้วย &lt;&lt;--- เพิ่ม document</h3>
+<p>Create a new database</p>
+<pre><code>CREATE DATABASE PrimatesGameDB;
+</code></pre>
+<p>Import the database backup on the target machine.</p>
+<p>Once the database is created, import the SQL data dump into the new database:</p>
+<pre><code>sudo mysql -u root -p PrimatesGameDB &lt; database_backup.sql
+</code></pre>
+<p>This will restore the database on the target machine.</p>
+<p>After the database is imported, you can run Django migrations to ensure the schema is up to date:</p>
+<pre><code>python3 manage.py migrate
+</code></pre>
+<p>Now, it's a good time to check the web application to see if it's running correctly, run the command.</p>
+<pre><code>python3 manage.py runserver 0.0.0.0:8000
+</code></pre>
+<p>This will run the web application on your local system.</p>
+<p>Go to Site administration page by url http://127.0.0.1:8000/admin/</p>
+<p>Login as admin (username and password are in user.txt in root directory of the project file)</p>
+<p>Check if database has all table present.</p>
+<p><img src="/images/adminpage.png" alt="adminpage" width="400"></p>
+<h2 id="step-3-create-a-feature-branch">Step 3: Create a feature branch.</h2>
+<p>Creating a feature branch allows you to experiment with your code and create tasks as you like. Once you've finished testing, you can merge your code back into the original main branch.</p>
+<p>For more information about git branch <a href="https://medium.com/amiearth/%E0%B8%A1%E0%B8%B2%E0%B8%97%E0%B8%B3%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A3%E0%B8%B9%E0%B9%89%E0%B8%88%E0%B8%B1%E0%B8%81-git-branch-560c23e67eb6">check</a></p>
+<pre><code>git checkout -b name-of-your-branch
+</code></pre>
+<h2 id="step-3-add-new-applications-tasks-to-the-web-application">Step 3: Add new applications (tasks) to the web application.</h2>
+<p>Now the important step, adding new application (task) to web app. </p>
+<pre><code>python3 manage.py startapp PrimalGame_Your-Task-Name
+
+</code></pre>
+<p>Replace 'Your-Task-Name' with your preferred name.</p>
+<p>You will see new directory with your app name in the root directory of the project. In this directory, you will see some scipts that need for your app. No need to do anything for these script now.</p>
+<p>Now, add your new application in the project. All of the requirement app use in this project need to include in setting.py file in project level.</p>
+<p>Go to setting.py located in project directory, in this case, under PrimatesGame</p>
+<p><img src="/images/settingpy.png" alt="settingpy" width="400"></p>
+<p>Locate INSTALLED_APPS section and add new app at the last line (in square bracket) in the format like this.</p>
+<pre><code>'PrimalGame_Your-Task-Name',
+</code></pre>
+<p>Example of INSTALLED_APPS section after adding new application</p>
+<pre><code>INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'PrimalGameAPI',
+    'rest_framework',
+    'djoser',
+    'PrimalGame_Your-Task-Name'
+]
+
+</code></pre>
+<h2 id="step-4-implement-the-logic-for-the-core-function">Step 4 : Implement the logic for the core function.</h2>
+<p>Now we will implement some core function to make your application work.</p>
+<p>First, your application need the HTML page as </p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
