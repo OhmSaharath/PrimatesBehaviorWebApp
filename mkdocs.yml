@@ -1,6 +1,6 @@
 site_name: Primates Behavior WebApp Documentation
 
-site_url: https://github.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/tree/gh-pages/ # Lab site
+# site_url: https://github.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/tree/gh-pages/ # Lab site
 # site_url: https://github.com/rsongphon/PrimatesBehaviorWebApp/tree/gh-pages/
 
 theme:
@@ -8,8 +8,10 @@ theme:
 nav:
   - Home: index.md
   - Tour: 
+    - "Integrated System Implementation": tour/integrated_system.md
     - "WebApp Explained": tour/webapp_explained.md
     - "Concept Explained": tour/concept_explained.md
+    
   - Tutorial:
     - "Adding Tasks": tutorials/adding_tasks.md
 

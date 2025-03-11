@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Integrated System Implementation - Primates Behavior WebApp Documentation</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../..">Primates Behavior WebApp Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../.." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Tour</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">Integrated System Implementation</a>
+</li>
+                                    
+<li>
+    <a href="../webapp_explained/" class="dropdown-item">WebApp Explained</a>
+</li>
+                                    
+<li>
+    <a href="../concept_explained/" class="dropdown-item">Concept Explained</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Tutorial</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../../tutorials/adding_tasks/" class="dropdown-item">Adding Tasks</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../.." class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../webapp_explained/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#integrated-system-implementation" class="nav-link">Integrated System Implementation</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#apparatus-prototype" class="nav-link">Apparatus (Prototype)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#equipments" class="nav-link">Equipments</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#system-diagram" class="nav-link">System Diagram</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#touch-screen-connection" class="nav-link">Touch Screen Connection</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#peristaltic-pumps-connection" class="nav-link">Peristaltic Pumps Connection</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="integrated-system-implementation">Integrated System Implementation</h1>
+<h2 id="apparatus-prototype">Apparatus (Prototype)</h2>
+<p><img src="images/apparatus.png" alt="apparatus" height="400" /></p>
+<p>A cage-based device is designed according to the marmoset experimental behavioral instrument (MXBI) [A.Calapai et al. 2022]. The device's design has been slightly modified from MXBI to enhance the capabilities of experiments. </p>
+<p>The main component is divided into three sections.</br></p>
+<ul>
+<li>Behavioral chamber </li>
+<li>Electronic compartment </li>
+<li>Waste bin </li>
+</ul>
+<h2 id="equipments">Equipments</h2>
+<p>The electronics compartment on the ​left side of the instrument contains:</p>
+<ul>
+<li>Raspberry Pi 4 Model B</li>
+<li>Raspberry Pi Camera Module 3</li>
+<li>2x Visaton FR58, 8 Ω, 120–20,000 Hz: Note that one speaker is housed in the electronics compartment, while the other is wired to the opposite side of the instrument.</li>
+<li>Peristaltic pump (JIHPUMP MN3 Mini OEM Peristaltic Pumps MN3/BT)</li>
+<li>134.2K WL-134 Long distance RFID Animal Tag Reader Module</li>
+<li>24v 7Ah Lithium ion battery with XT60 connector</li>
+<li>HW-652 YAMAHA YDA138-E 12W+12W Dual Channel Digital Audio Amplifier Board DC 12V </li>
+<li>TB6600 Single Axis 4A Stepper Motor Driver Controller 9~42V Micro-Step CNC</li>
+<li>3x 300W 20A DC-DC Adjustable Step Down Converter Module Constant Current</li>
+</ul>
+<p>The behavioral chamber in the middle hosts:</p>
+<ul>
+<li>Waveshare 10.1inch Resistive Touch Screen LCD</li>
+</ul>
+<h2 id="system-diagram">System Diagram</h2>
+<p><img src="images/schematic_diagram.png" alt="schematic_diagram" /></p>
+<p>The system utilizes a Raspberry Pi single-board computer to provide general-purpose input/output (GPIO) capabilities, enabling researchers to interface with a diverse range of external hardware components. The modular design allows for flexible hardware configurations tailored to specific task requirements. </p>
+<h2 id="touch-screen-connection">Touch Screen Connection</h2>
+<p>A 10-inch Waveshare HDMI LCD touchscreen is employed for visual cognition tasks. To facilitate resistive touch functionality, only five pins are necessary for communication via the Serial Peripheral Interface (SPI) protocol.</p>
+<ol>
+<li>SCK (Serial Clock): Clock signal from the master (Raspberry Pi) to synchronize data transmission.</li>
+<li>MOSI (Master Out Slave In): Used for sending data from the master (Raspberry Pi) to the touchscreen controller.</li>
+<li>MISO (Master In Slave Out): Used for receiving data from the touchscreen controller to the master.</li>
+<li>CE1 (Chip Enable 1/Chip Select 1): Used to select the touchscreen for communication (low active).</li>
+<li>IRQ (Interrupt Request): Used by the touchscreen to signal the master that an event has occurred (low level while the Touch Panel detects touching).</li>
+</ol>
+<p>To preserve the remaining GPIO pins and ensure a modular design, the Raspberry Pi is not mounted directly onto the display module, as recommended in Waveshare’s documentation. Instead of soldering the five pins directly from the back of the panel to connect to the Raspberry Pi, a detachable interface is utilized. Refer to the diagram below for the connection details.</p>
+<p><img src="images/touchscreen_diagram.png" alt="touchscreen_diagram"/></p>
+<p>The panel requires screen configuration and touch calibration before it can be operational. Refer to the 'Software Setting' and 'Touch Calibration' sections in the Waveshare documentation for detailed instructions.</p>
+<p><a href="https://www.waveshare.com/wiki/10.1inch_HDMI_LCD">Waveshare 10.1inch HDMI LCD Documentation</a></p>
+<h2 id="peristaltic-pumps-connection">Peristaltic Pumps Connection</h2>
+<p><img src="images/pump.png" alt="pump" width="200"/></p>
+<p>The Mini OEM Peristaltic Pump, model MN3/BT from JIHPump, is powered by a 24V DC, 48W stepper motor. To unlock its full potential, the system utilizes a TB6600 controller, enabling precise control and synchronization.</p>
+<p>The MN3/BT employs a 4-wire stepper motor, comprising two coils, with each coil featuring two wires. The wiring configuration is illustrated in the diagram below.</p>
+<p>If a different stepper motor is used, identify the wires belonging to the same coil by measuring the resistance between them using a multimeter.</p>
+<ul>
+<li>If two wires are part of the same coil, they will show a measurable resistance (typically a few ohms).</li>
+<li>If the wires are from different coils, the resistance will be very high (open circuit).</li>
+</ul>
+<p>To control the motor, three pins are required.</p>
+<ul>
+<li>
+<p>PUL (Pulse): This pin is used to control the steps of the stepper motor. Each pulse sent to this pin will cause the motor to move one step. The frequency of the pulses determines the speed of the motor.</p>
+</li>
+<li>
+<p>DIR (Direction): This pin controls the direction of the motor rotation. A high signal (5V) will make the motor rotate in one direction, and a low signal (0V) will make it rotate in the opposite direction.</p>
+</li>
+<li>
+<p>ENA (Enable): This pin is used to enable or disable the motor. When this pin is high, the motor is disabled, and when it is low, the motor is enabled.</p>
+</li>
+</ul>
+<p>PUL, DIR, and ENA are connected to the microcontroller’s digital output pins.</p>
+<p><img src="images/motor_diagram.png" alt="motor_diagram" width="400"/></p>
+<p>Additionally, the TB6600 stepper motor driver features six DIP (Dual In-line Package) switches on its board. These switches are used to configure two key parameters:</p>
+<ul>
+<li>
+<p>Current: This sets the maximum current that the driver will supply to the motor. The configured current must not exceed the motor's rated current capacity.</p>
+</li>
+<li>
+<p>Microstep: Microstepping enables finer control of the stepper motor, resulting in smoother rotation and improved precision."</p>
+</li>
+</ul>
+<p>The switches on the DIP switch bar are binary, with only two possible positions: on (1) and off (0).</p>
+<p><img src="images/dip.png" alt="dip" width="400"/></p>
+<p>Refer to the diagram below for the switch numbering and their corresponding configurations.</p>
+<p><img src="images/dip_diagram.png" alt="dip_diagram" /></p>
+<p>The stepper motor's current (amp) setting can be found in the model's specification sheet. For the MN3/BT stepper motor used in this project, a current setting of 2 amps is required, corresponding to the switch configuration S4, S5, S6 as ON, OFF, OFF.</p>
+<p>Reference : <a href="https://drufelcnc.com/?c=blog&amp;p=DipSwitches">How to set dip switches correctly</a></p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

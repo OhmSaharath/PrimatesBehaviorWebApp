@@ -8,7 +8,7 @@ The idea is to use the Django framework to gain access to functions such as auth
 
 # Overview
 
-<img src="https://raw.githubusercontent.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/refs/heads/gh-pages/images/WebAppDiagram.jpg" alt="webappdiagram" />
+<img src="images/WebAppDiagram.jpg" alt="webappdiagram" />
 
 The web application is devided into three sections.
 
@@ -116,24 +116,24 @@ The Django Template Language (DTL) is a built-in templating system in Django use
 Some of the core function of the Web application platform on user clients side:
 
 - User authentication/authorization with tokenization, session management.</br>
-<img src="https://raw.githubusercontent.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/refs/heads/gh-pages/images/login.png" alt="login" width="300"/>
+<img src="images/login.png" alt="login" width="300"/>
 
 - Remotely controlled experiments on the edge device with customized configurations for each task.
-<img src="https://raw.githubusercontent.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/refs/heads/gh-pages/images/startgame.png" alt="startgame" />
+<img src="images/startgame.png" alt="startgame" />
 
 - Dynamically update the state of each device in real-time, observe the experiment results, and end the session.
-<img src="https://raw.githubusercontent.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/refs/heads/gh-pages/images/state1.png" alt="state1" />
-<img src="https://raw.githubusercontent.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/refs/heads/gh-pages/images/state2.png" alt="state2" />
+<img src="images/state1.png" alt="state1" />
+<img src="images/state2.png" alt="state2" />
 
 - Report generation: Support filtering by date, tasks, and optionally by instruments and primates.
-<img src="https://raw.githubusercontent.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/refs/heads/gh-pages/images/reportgeneration.png" alt="reportgeneration" />
+<img src="images/reportgeneration.png" alt="reportgeneration" />
 
 
 ## Device Clients
 
 Device clients, also known as cage-based devices in this project, are Raspberry Pi-based systems that also gain access to the web application, but as RPiClients users. The token from this user allows the server to grant permission for each device client to perform CRUD operations via APIs.
 
-<img src="https://raw.githubusercontent.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/refs/heads/gh-pages/images/userclientflow.png" alt="userclientflow" />
+<img src="images/userclientflow.png" alt="userclientflow" />
 
 The device clients are installed with Python scripts that leverage Selenium to automate the Chromium web browser.
 

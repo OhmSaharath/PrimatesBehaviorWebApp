@@ -179,7 +179,7 @@ Login as admin (username and password are in user.txt in root directory of the p
 
 Check if database has all table present.
 
-<img src="https://raw.githubusercontent.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/refs/heads/gh-pages/images/adminpage.png" alt="adminpage" width="400">
+<img src="images/adminpage.png" alt="adminpage" width="400">
 
 ## Step 3: Create a feature branch.
 
@@ -209,7 +209,7 @@ Now, add your new application in the project. All of the requirement app use in 
 
 Go to setting.py located in project directory, in this case, under PrimatesGame
 
-<img src="https://raw.githubusercontent.com/BeACoN-Lab-Med-Chula/PrimatesBehaviorWebApp/refs/heads/gh-pages/images/settingpy.png" alt="settingpy" width="400">
+<img src="images/settingpy.png" alt="settingpy" width="400">
 
 Locate INSTALLED_APPS section and add new app at the last line (in square bracket) in the format like this.
 
