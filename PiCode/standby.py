@@ -14,6 +14,26 @@ import yaml
 
 import RPi.GPIO as GPIO 
 
+from utils.PETRFIDReader import *
+
+import logging
+import sys
+
+
+# Configure logging
+logging.basicConfig(filename="error_log.txt", level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s")
+
+# Function to log uncaught exceptions
+def log_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)  # Allow Ctrl+C exit without logging
+        return
+    logging.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+
+# Set global exception handler
+sys.excepthook = log_exception
+
+
 ###### Motor Control #####
 # Define GPIO pins
 DIR = 18      # Direction pin
@@ -104,10 +124,16 @@ password = conf['account']['password']
 ROOT_URI = "http://192.168.0.100:8000"
 STANDBY_URI = ROOT_URI + "/standby/"
 
-API_ENDPOINT_STATE = ROOT_URI + "/api/rpi-states/1"
+####3 Device Information
+RPI_NUM = "1" # Number of device (Hard Code)
+DEVICE_NAME = "Device1"
+
+##### API information
+API_ENDPOINT_STATE = ROOT_URI + "/api/rpi-states/" + RPI_NUM
 API_ENDPOINT_GAMEINSTANCE = ROOT_URI + '/api/games-instances/'
 API_ENDPOINT_GAME = ROOT_URI + '/api/games/'
 LOGIN_URL = ROOT_URI +  '/accounts/login/'
+API_ENDPOINT_RFID_RESPONSE = ROOT_URI + "/backend/rfid_response/"
 
 # Token value (RPiClient User token)
 TOKEN = "0828684a73506b61ae2dfa8f0ba0c0f7e02b4208"
@@ -212,10 +238,27 @@ def get_arbitary_info(endpoint,headers,**kwargs):
     except Exception as e:
         print("Error:", e)
 
- 
+def post_request(data, endpoint, headers):
+    '''
+    POST request to endpoint 
+    return True if update is successful , False otherwise
+
+    '''
+    try:
+        # Send the POST request
+        response = requests.post(endpoint, data=data, headers=headers)
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print("Error:", e)
+
 
 gpio_lock = multiprocessing.Lock()
 
+
+### Mัaybe integrate motor control into main to reduce redundant GET request (motor status already in RPI state)
 def motor_control():
     
     print('Testing')
@@ -252,8 +295,8 @@ def motor_control():
         elif pi_status['motor'] == False:
             disable_motor()  # Ensure motor is disabled
         time.sleep(0.250) # Wait 0.25 second
-
-def monitor_close_game():
+''' Original Close game logic, integrated into main logic -> maybe delete in the future
+def response_on_rpiStatus():
     while True:
         pi_status = get_pi_status(API_ENDPOINT_STATE,HEADERS)
         if pi_status['stop_game'] == True:
@@ -267,22 +310,66 @@ def monitor_close_game():
             
             update_pi_status(pi_status, API_ENDPOINT_STATE, HEADERS)
         time.sleep(3)
+'''
+        
+def RFID_reader():
+    try:
+        print("RFID start")
+        def tag_callback(reader, tag):
+            print(f"[{reader.port}] Tag: {tag}")
+            if reader == reader1:
+                print("reader1")
+            #if reader == reader2:
+                #print("reader2")
+        reader1 = PETRFIDReader('/dev/ttyACM0', callback=tag_callback)
+        #reader2 = PETRFIDReader('COM8', callback=tag_callback)
+
+        
+        while True:
+            tag = reader1.get_last_tag()
+            if tag:
+                #print(f"Detected Tag: {tag}")  # Print every time a tag is read
+                # You can use the `tag` variable in other parts of your code
+                #print("Call API")
+                
+                data = {
+                    "tag": tag,
+                    "device_name": DEVICE_NAME
+                }
+                
+                #print(data)
+                
+                post_request(data, API_ENDPOINT_RFID_RESPONSE, HEADERS)
+                
+            time.sleep(0.1)  # Small delay to avoid excessive CPU usage
+    except Exception as e:
+        print(f"RFID Reader Error: {e}")
+
+
         
 
-def main_standby():
+def main_algorithm():
+    
+    # Web application Response base on RPI state status
     
     #Start by standby page
     browser.get(STANDBY_URI)
     
     while True:
+        
+        # Receive Raspberrypi state stattus
         pi_status = get_pi_status(API_ENDPOINT_STATE,HEADERS)
+        
         #print(pi_status)
         if pi_status:
-            if pi_status['is_occupied'] == True:
+            
+            # CASE0 : Game Running
+            if (pi_status['is_occupied'] == True) and (pi_status['stop_game'] == False):
                 print('Game is running')
-                time.sleep(30)
+                time.sleep(0.5)
                 continue
-            # STATE : Start game signal : from user
+            
+            # CASE1 : Start game signal (Board is available and recive start game flag == True)
             elif(pi_status['is_occupied'] == False) and(pi_status['start_game'] == True):
                 
                 # Find out which game it is : check from gameinstance API
@@ -299,24 +386,47 @@ def main_standby():
                 pi_status['start_game'] = False
                 pi_status['is_occupied'] = True
                 update_pi_status(pi_status, API_ENDPOINT_STATE,HEADERS)
+            
+            # CASE2 : Close game signal
+            elif (pi_status['is_occupied'] == True) and (pi_status['stop_game'] == True):
+                
+                STANDBY_PAGE = STANDBY_URI
+                browser.get(STANDBY_PAGE)
+                
+                pi_status['stop_game'] = False
+                pi_status['start_game'] = False
+                pi_status['is_occupied'] = False
+                pi_status['game_instance_running'] = None
+                
+                update_pi_status(pi_status, API_ENDPOINT_STATE, HEADERS)
+
+            
             else:
                 print('Standby....')
-                time.sleep(5)
+                time.sleep(0.5)
         else :
             # Further work: False to request from API 
             print('Something wrong with the server, or authentecation failed')
 
 def main():
     try:
-        main_start = multiprocessing.Process(name="main_standby", target = main_standby, args = ())
-        ctx = multiprocessing.get_context("fork")  # Use "fork" for compatibility
-        pump_motor = multiprocessing.Process(target=motor_control, args=())
-        pump_motor = ctx.Process(target=motor_control)
-        close_game = multiprocessing.Process(name="monitor_close_game", target = monitor_close_game, args = ())
-        main_start.start()
-        pump_motor.start()
-        pump_motor.join()
-        close_game.start()
+        main_logic = multiprocessing.Process(name="main", target = main_algorithm, args = ())
+        #pump_motor = multiprocessing.Process(target=motor_control, args=())
+        #response_onStatus = multiprocessing.Process(name="response_on_rpiStatus", target = response_on_rpiStatus, args = ())
+        RFID_read = multiprocessing.Process(name="RFID_read", target = RFID_reader, args = ())
+        #RFID_read = ctx.Process(target=RFID_reader)
+        #ctx = multiprocessing.get_context("fork")  # Use "fork" for compatibility
+        #pump_motor = ctx.Process(target=motor_control)
+
+        
+        main_logic.start()
+
+        RFID_read.start()
+        #RFID_read.join()
+        #close_game.start()
+        
+        #pump_motor.start() 
+        #pump_motor.join()
     except KeyboardInterrupt:
         print('Stopping motor...')
     finally:

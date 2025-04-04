@@ -25,4 +25,5 @@ urlpatterns = [
     path('accounts/', include('PrimatesGameAccount.urls')),
     path('', include('PrimatesGameWeb.urls')),
     path('game/', include('PrimatesGame_FixationTask.urls')),
+    path('backend/', include('PrimatesGameBackEnd.urls'))
 ]

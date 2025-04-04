@@ -210,7 +210,7 @@ def start_game(request):
                     str_timezone = timezone.localtime(date_time).strftime("%Y-%m-%d_%H-%M")
                     #formatted_date = dateformat.format(
                     #                timezone.localtime(timezone.now()),
-                     #               'Y-m-d H:i:s',
+                    #               'Y-m-d H:i:s',
                     #                )
                     primate =  GameInstances.objects.get(id=game_instance_id).primate
                     

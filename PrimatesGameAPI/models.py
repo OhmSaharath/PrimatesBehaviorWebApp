@@ -6,7 +6,8 @@ class RPiBoards(models.Model):
     board_name = models.CharField(max_length=255, default="")  # used to indicated board rather that id
     ip_address = models.GenericIPAddressField(protocol='IPv4')  # 'both' allows both IPv4 and IPv6 addresses
     ssid = models.CharField(max_length=32 , blank=True , null=True)  # SSID lengths can vary but typically limited to 32 characters
-    ssid_password = models.CharField(max_length=255, blank=True , null=True)  
+    ssid_password = models.CharField(max_length=255, blank=True , null=True) 
+    token = models.CharField(max_length=255, default=None , blank=True , null=True) 
     def __str__(self)-> str:
 	    return self.board_name
     
@@ -20,19 +21,20 @@ class RPiStates(models.Model):
     motor = models.BooleanField(default=False)
     def __str__(self)-> str:
 	    return self.rpiboard.board_name
- 
+
 class Primates(models.Model):
     name = models.CharField(max_length=255)
+    rfid_tag = models.CharField(max_length=255,default=None, blank=True , null=True)
     is_occupied =  models.BooleanField(default=False)
+    #current_stage = models.ForeignKey("Games", on_delete=models.SET_NULL, null=True, blank=True)
+    game_instance = models.ForeignKey("GameInstances", on_delete=models.SET_NULL, null=True, blank=True)
     def __str__(self)-> str:
 	    return self.name
-    
 
 class Games(models.Model):
     name = models.CharField(max_length=255)
     def __str__(self)-> str:
-	    return self.name
-
+        return self.name
 
 class GameConfig(models.Model):
     name = models.CharField(max_length=255)
@@ -57,10 +59,10 @@ class GameInstances(models.Model):
 class FixationGameConfig(models.Model):
     configtype = models.ForeignKey(GameConfig, on_delete=models.PROTECT)
     instance = models.OneToOneField(GameInstances, on_delete=models.CASCADE,related_name="fixationgameinstance")
-    interval_correct = models.IntegerField()
-    interval_incorrect = models.IntegerField()
-    interval_absent = models.IntegerField()
-    button_holdDuration = models.IntegerField()
+    interval_correct = models.IntegerField(default=2)
+    interval_incorrect = models.IntegerField(default=5)
+    interval_absent = models.IntegerField(default=60)
+    button_holdDuration = models.IntegerField(default=200)
 
 class Reports(models.Model):
     reportname =  models.CharField(max_length=50)
