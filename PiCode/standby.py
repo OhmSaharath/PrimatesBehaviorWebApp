@@ -92,6 +92,36 @@ def motor_test():
     
     
     #GPIO.cleanup()
+    
+def turn_motor_CCW(steps,speed):
+    enable_motor()
+
+    #### Motor control logic
+    
+    # Set the direction to ccounter-lockwise and run for 200 steps
+    GPIO.output(DIR, CCW)
+    for x in range(steps):
+        GPIO.output(STEP, GPIO.HIGH)
+        time.sleep(speed)
+        GPIO.output(STEP, GPIO.LOW)
+        time.sleep(speed)
+    
+    disable_motor()
+    
+def turn_motor_CW(steps,speed):
+    enable_motor()
+
+    #### Motor control logic
+    
+    # Set the direction to clockwise and run for 200 steps
+    GPIO.output(DIR, CW)
+    for x in range(steps):
+        GPIO.output(STEP, GPIO.HIGH)
+        time.sleep(speed)
+        GPIO.output(STEP, GPIO.LOW)
+        time.sleep(speed)
+    
+    disable_motor()
 
 
 # Set up Chrome options
@@ -257,60 +287,6 @@ def post_request(data, endpoint, headers):
 
 gpio_lock = multiprocessing.Lock()
 
-
-### Mัaybe integrate motor control into main to reduce redundant GET request (motor status already in RPI state)
-def motor_control():
-    
-    print('Testing')
-    motor_test()
-    
-    while True:
-        #print('Test Motor')
-        pi_status = get_pi_status(API_ENDPOINT_STATE,HEADERS)
-        if pi_status['motor'] == True:
-            enable_motor()
-            #### Motor control logic
-            
-            # Set the direction to clockwise and run for 200 steps
-            GPIO.output(DIR, CW)
-            for x in range(steps):
-                GPIO.output(STEP, GPIO.HIGH)
-                time.sleep(speed)
-                GPIO.output(STEP, GPIO.LOW)
-                time.sleep(speed)
-
-            # Brief pause and switch direction
-            time.sleep(1.0)
-            GPIO.output(DIR, CCW)
-            for x in range(steps):
-                GPIO.output(STEP, GPIO.HIGH)
-                time.sleep(speed)
-                GPIO.output(STEP, GPIO.LOW)
-                time.sleep(speed)
-
-            time.sleep(1.0)  # Adjust idle time as needed
-            
-            disable_motor()
-            
-        elif pi_status['motor'] == False:
-            disable_motor()  # Ensure motor is disabled
-        time.sleep(0.250) # Wait 0.25 second
-''' Original Close game logic, integrated into main logic -> maybe delete in the future
-def response_on_rpiStatus():
-    while True:
-        pi_status = get_pi_status(API_ENDPOINT_STATE,HEADERS)
-        if pi_status['stop_game'] == True:
-            HOME_PAGE = STANDBY_URI
-            browser.get(HOME_PAGE)
-            
-            pi_status['stop_game'] = False
-            pi_status['start_game'] = False
-            pi_status['is_occupied'] = False
-            pi_status['game_instance_running'] = None
-            
-            update_pi_status(pi_status, API_ENDPOINT_STATE, HEADERS)
-        time.sleep(3)
-'''
         
 def RFID_reader():
     try:
@@ -363,13 +339,31 @@ def main_algorithm():
         #print(pi_status)
         if pi_status:
             
-            # CASE0 : Game Running
-            if (pi_status['is_occupied'] == True) and (pi_status['stop_game'] == False):
+            # CASE0 : Game Running, no motot signal
+            if (pi_status['is_occupied'] == True) and (pi_status['stop_game'] == False) and (pi_status['motor'] == False):
                 print('Game is running')
+                print('Motor off')
+                disable_motor()  # Ensure motor is disabled
                 time.sleep(0.5)
                 continue
             
-            # CASE1 : Start game signal (Board is available and recive start game flag == True)
+            # CASE1 : Game Running, receive command to turn motor on
+            elif (pi_status['is_occupied'] == True) and (pi_status['stop_game'] == False) and (pi_status['motor'] == True):
+                print('Game is running')
+                print('Motor on')
+                
+                # Turn motor once
+                turn_motor_CCW(steps,speed)
+                
+                # stop motor
+                pi_status['motor'] = False
+                update_pi_status(pi_status, API_ENDPOINT_STATE,HEADERS)
+                
+                time.sleep(0.5)
+                continue
+            
+            
+            # CASE2 : Start game signal (Board is available and recive start game flag == True)
             elif(pi_status['is_occupied'] == False) and(pi_status['start_game'] == True):
                 
                 # Find out which game it is : check from gameinstance API
@@ -385,9 +379,10 @@ def main_algorithm():
                 # update status and switch to game running mode
                 pi_status['start_game'] = False
                 pi_status['is_occupied'] = True
+                pi_status['motor'] = False
                 update_pi_status(pi_status, API_ENDPOINT_STATE,HEADERS)
             
-            # CASE2 : Close game signal
+            # CASE3 : Close game signal
             elif (pi_status['is_occupied'] == True) and (pi_status['stop_game'] == True):
                 
                 STANDBY_PAGE = STANDBY_URI
@@ -396,37 +391,34 @@ def main_algorithm():
                 pi_status['stop_game'] = False
                 pi_status['start_game'] = False
                 pi_status['is_occupied'] = False
+                pi_status['motor'] = False
                 pi_status['game_instance_running'] = None
                 
                 update_pi_status(pi_status, API_ENDPOINT_STATE, HEADERS)
 
             
-            else:
+            else: # Standby Phase, Make sure motor is disable to conserve energy
                 print('Standby....')
+                disable_motor()
                 time.sleep(0.5)
+                continue
         else :
             # Further work: False to request from API 
             print('Something wrong with the server, or authentecation failed')
 
 def main():
     try:
-        main_logic = multiprocessing.Process(name="main", target = main_algorithm, args = ())
-        #pump_motor = multiprocessing.Process(target=motor_control, args=())
-        #response_onStatus = multiprocessing.Process(name="response_on_rpiStatus", target = response_on_rpiStatus, args = ())
-        RFID_read = multiprocessing.Process(name="RFID_read", target = RFID_reader, args = ())
-        #RFID_read = ctx.Process(target=RFID_reader)
-        #ctx = multiprocessing.get_context("fork")  # Use "fork" for compatibility
-        #pump_motor = ctx.Process(target=motor_control)
-
+        ctx = multiprocessing.get_context("fork") 
+        main_logic = ctx.Process(target=main_algorithm)
+        RFID_read = ctx.Process(target=RFID_reader)
         
         main_logic.start()
-
         RFID_read.start()
-        #RFID_read.join()
-        #close_game.start()
         
-        #pump_motor.start() 
-        #pump_motor.join()
+        main_logic.join()
+        RFID_read.join()
+        
+
     except KeyboardInterrupt:
         print('Stopping motor...')
     finally:
