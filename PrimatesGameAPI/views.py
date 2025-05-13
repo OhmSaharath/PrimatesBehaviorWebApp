@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User, Group
 from .serializers import PrimatesSerializer , UserSerializer , UserNamePOSTSerializer , RPiBoardsSerializer , RPiStatesSerializer , GamesSerializer , GamesInstancesSerializer, GameConfigSerializer, FixationGameConfigSerializer, ReportsSerializer, FixationGameReportSerializer, FixationGameResultSerializer
+from .channels_utils import broadcast_state
 
 # Create your views here.
 
@@ -76,6 +77,10 @@ class SingleRPiStateViews(generics.RetrieveUpdateDestroyAPIView):
     queryset = RPiStates.objects.all()
     serializer_class = RPiStatesSerializer
     permission_classes = (IsAuthenticated|IsAdmin|IsResearcher|IsRPiClient,)
+    
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        broadcast_state(instance)
     
 class GamesView(generics.ListCreateAPIView):
     queryset = Games.objects.all()

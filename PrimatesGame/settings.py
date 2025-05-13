@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'djoser',
     'crispy_forms',
     'crispy_bootstrap4',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -157,3 +159,34 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 #
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 25000
+
+
+# This must exactly match the module path to your asgi.py
+ASGI_APPLICATION = 'PrimatesGame.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': { 'hosts': [('127.0.0.1', 6379)] },
+    },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': { 'class': 'logging.StreamHandler' },
+    },
+    'loggers': {
+        # Django’s HTTP side
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        # Channels internals
+        'channels': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}

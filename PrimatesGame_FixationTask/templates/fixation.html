@@ -12,6 +12,9 @@
 <body>
     <div id="game-container" data-signal-url="{% url 'fixation_game:signalresponse' gameinstance=0 %}"  data-config-url="{% url 'fixation_game:get_game_config' gameinstance=0 %}" report-update-url="{% url 'fixation_game:update_report' gameinstance=0 %}" fullscreen>
         <!-- Other HTML content -->
+
+        <!-- Image element -->
+        <img id="banana-image"src="{% static 'img/banana.png' %}" alt="banana_img">
          
             <!-- Audio elements -->
         <audio id="correct-sound" src="{% static 'sound/mario-coin.mp3' %}" preload="auto" ></audio>

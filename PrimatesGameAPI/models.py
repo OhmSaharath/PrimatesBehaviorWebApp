@@ -19,8 +19,19 @@ class RPiStates(models.Model):
     start_game =  models.BooleanField(default=False)
     stop_game =  models.BooleanField(default=False)
     motor = models.BooleanField(default=False)
+    def to_dict(self):
+        return {
+            'rpi_num': self.rpiboard.pk,
+            'is_occupied': self.is_occupied,
+            'game_instance_running': self.game_instance_running,
+            'start_game': self.start_game,
+            'stop_game': self.stop_game,
+            'motor': self.motor,
+        }
     def __str__(self)-> str:
 	    return self.rpiboard.board_name
+
+
 
 class Primates(models.Model):
     name = models.CharField(max_length=255)

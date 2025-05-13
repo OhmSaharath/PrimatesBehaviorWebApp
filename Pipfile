@@ -12,6 +12,9 @@ django-crispy-forms = "*"
 crispy-bootstrap4 = "*"
 mysqlclient = "*"
 pytz = "*"
+channels = "*"
+channels-redis = "*"
+daphne = "*"
 
 [dev-packages]
 
