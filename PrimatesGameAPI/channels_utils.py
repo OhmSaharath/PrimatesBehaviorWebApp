@@ -12,3 +12,4 @@ def broadcast_state(pi_state):
             'data': pi_state.to_dict(),
         }
     )
+    print(f"Broadcasting to group: rpi_{pi_state.rpiboard.pk}")

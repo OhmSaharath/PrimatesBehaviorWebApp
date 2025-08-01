@@ -21,7 +21,7 @@ class RPiStates(models.Model):
     motor = models.BooleanField(default=False)
     def to_dict(self):
         return {
-            'rpi_num': self.rpiboard.pk,
+            'rpiboard': self.rpiboard.pk,
             'is_occupied': self.is_occupied,
             'game_instance_running': self.game_instance_running,
             'start_game': self.start_game,
