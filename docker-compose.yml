@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # 1. Application Service
+  app:
+    build: .  # สั่งให้ build Image จาก Dockerfile ใน directory ปัจจุบัน
+    container_name: python_app
+    volumes:
+      - .:/app  # Mount โค้ดปัจจุบันเข้าไปใน container ทำให้แก้โค้ดแล้วเห็นผลทันที
+    ports:
+      - "8000:8000"  # Map port 8000 ของเครื่องเราเข้ากับ port 8000 ของ container
+    environment:
+      # Environment Variables สำหรับให้แอปของคุณเชื่อมต่อกับ DB และ Redis
+      - DB_HOST=db
+      - DB_NAME=PrimatesGameDB
+      - DB_USER=admingame
+      - DB_PASS=game@123!
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - db      # สั่งให้รัน service 'db' และ 'redis' ให้พร้อมก่อน 'app'
+      - redis
+
+  # 2. Database Service (MySQL)
+  db:
+    image: mysql:8.0  # ใช้ Official MySQL Image
+    container_name: mysql_db
+    volumes:
+      - db_data:/var/lib/mysql  # ใช้ Named Volume เพื่อเก็บข้อมูล database อย่างถาวร
+    environment:
+      # Environment Variables สำหรับสร้าง Database และ User ใน MySQL
+      MYSQL_ROOT_PASSWORD: admin # รหัสผ่านสำหรับ root ของ MySQL
+      MYSQL_DATABASE: PrimatesGameDB
+      MYSQL_USER: admingame
+      MYSQL_PASSWORD: game@123!
+    restart: always
+
+  # 3. Redis Service
+  redis:
+    image: redis:7-alpine  # ใช้ Official Redis Image (alpine เป็นเวอร์ชันเล็ก)
+    container_name: redis_cache
+    restart: always
+
+# ประกาศ Named Volume สำหรับเก็บข้อมูลของ MySQL
+volumes:
+  db_data:

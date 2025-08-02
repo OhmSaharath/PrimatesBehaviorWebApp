@@ -8,15 +8,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const reportUrlTemplate = gameContainer.getAttribute('report-update-url');
     const gameInstanceId = getGameInstanceIdFromURL();
     
-
     const button = document.createElement('button');
     let buttonSize = 95;  // Initial size percentage of the button
     const minButtonSizePx = 50;  // Minimum button size in pixels (0.5 cm = 50 pixels)
     const minClickAreaPx = 200;  // Minimum click area size in pixels (2 cm = 200 pixels), special case when button is less than 2cmx2cm
     
     button.style.position = 'absolute';  // Allow positioning the button absolutely
-
-
 
     // Create an overlay for handling the special click area
     const overlay = document.createElement('div');
@@ -49,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 console.log(data);
                 config = data;
             }
+            resetInactivityTimer();  // Start the inactivity timer after config is fetched
         })
         .catch(error => console.error('Error fetching config:', error));
     
@@ -57,20 +55,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // Get the audio elements
     const correctSound = document.getElementById('correct-sound');
     const incorrectSound = document.getElementById('incorrect-sound');
-
-    const banana = document.getElementById('banana-image');
-
-    // Banana picture initialization
-    banana.alt = 'Click to start';
-    banana.style.position = 'absolute';
-    // Set width to 50% of the screen width and height to auto to maintain aspect ratio
-    banana.style.width = '30%';
-    banana.style.height = 'auto';
-    // Center the banana image on the screen
-    banana.style.left = '50%';
-    banana.style.top = '50%';
-    banana.style.transform = 'translate(-50%, -50%)';
-    banana.style.cursor = 'pointer';
 
     // Initialize a variable to track touch duration
     let touchStartTime = null;
@@ -131,6 +115,18 @@ document.addEventListener("DOMContentLoaded", function() {
     clearInterval(durationCheckInterval);
     };
 
+    // Add event listeners for both touch and mouse events
+    button.addEventListener('mousedown', correct_startHandler);
+    button.addEventListener('mouseup', correct_endHandler);
+    button.addEventListener('touchstart', correct_startHandler);
+    button.addEventListener('touchend', correct_endHandler);
+
+    // Special case, tolerance window -> Green
+    overlay.addEventListener('mousedown', correct_startHandler);
+    overlay.addEventListener('mouseup', correct_endHandler);
+    overlay.addEventListener('touchstart', correct_startHandler);
+    overlay.addEventListener('touchend', correct_endHandler);
+
     // Incorrect case, background click -> Red
     const incorrect_Handler = (event) => {
         event.preventDefault(); // Prevent default behavior
@@ -156,6 +152,12 @@ document.addEventListener("DOMContentLoaded", function() {
             resetInactivityTimer();  // Start the inactivity timer after config is fetched
         }, config.interval_incorrect * 1000);  // Convert seconds to milliseconds
     }
+
+    // Add event listeners for both touch and mouse events for incorrect state
+    document.body.addEventListener('mousedown', incorrect_Handler);
+    document.body.addEventListener('touchstart', incorrect_Handler);
+
+
 
     function updateButtonColorAndTrials(color) {
         button.style.backgroundColor = color;
@@ -231,28 +233,26 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateButtonSize(sizePercentage) {
         const containerWidth = gameContainer.clientWidth;
         const containerHeight = gameContainer.clientHeight;
-    
-        // Calculate the smaller dimension of the container for a square button
-        const containerMinDimension = Math.min(containerWidth, containerHeight);
-    
-        const newSize = (containerMinDimension * sizePercentage) / 100;
-    
+        const newWidth = (containerWidth * sizePercentage) / 100;
+        const newHeight = (containerHeight * sizePercentage) / 100;
+
         // Ensure the button does not shrink below the minimum size
-        const finalSize = newSize < minButtonSizePx ? minButtonSizePx : newSize;
+        const finalWidth = newWidth < minButtonSizePx ? minButtonSizePx : newWidth;
+        const finalHeight = newHeight < minButtonSizePx ? minButtonSizePx : newHeight;
 
-        button.style.width = `${finalSize}px`;
-        button.style.height = `${finalSize}px`;
+        button.style.width = `${finalWidth}px`;
+        button.style.height = `${finalHeight}px`;
 
-        // Update the overlay size and position for the click area
-        if (finalSize < minClickAreaPx) {
-            const overlaySize = Math.max(minClickAreaPx, finalSize);
+        // Update the overlay size and position
+        if (finalWidth < minClickAreaPx || finalHeight < minClickAreaPx) {
+            const overlaySize = Math.max(minClickAreaPx, Math.max(finalWidth, finalHeight));
             overlay.style.width = `${overlaySize}px`;
             overlay.style.height = `${overlaySize}px`;
-            overlay.style.left = `${parseFloat(button.style.left) + (finalSize - overlaySize) / 2}px`;
-            overlay.style.top = `${parseFloat(button.style.top) + (finalSize - overlaySize) / 2}px`;
+            overlay.style.left = `${parseFloat(button.style.left) + (finalWidth - overlaySize) / 2}px`;
+            overlay.style.top = `${parseFloat(button.style.top) + (finalHeight - overlaySize) / 2}px`;
             overlay.style.pointerEvents = 'auto';  // Enable pointer events
         } else {
-            overlay.style.pointerEvents = 'none';  // Disable pointer events
+            overlay.style.pointerEvents = 'none';  // Disable pointer events in case of button larger than 0.5 x 0.5 cm
             overlay.style.width = '0px';
             overlay.style.height = '0px';
         }
@@ -361,42 +361,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }, config.interval_absent * 1000);
     }
 
-
-    // Function to start the game
-    function startGame() {
-        banana.style.display = 'none'; // Hide banana
-
-        // 1 second delay
-        setTimeout(function() {
-            console.log('This message is displayed after a 1-second delay');
-            // Add event listeners for both touch and mouse events for incorrect state
-            document.body.addEventListener('mousedown', incorrect_Handler);
-            document.body.addEventListener('touchstart', incorrect_Handler);
-
-            // Add event listeners for both touch and mouse events
-            button.addEventListener('mousedown', correct_startHandler);
-            button.addEventListener('mouseup', correct_endHandler);
-            button.addEventListener('touchstart', correct_startHandler);
-            button.addEventListener('touchend', correct_endHandler);
-
-            // Special case, tolerance window -> Green
-            overlay.addEventListener('mousedown', correct_startHandler);
-            overlay.addEventListener('mouseup', correct_endHandler);
-            overlay.addEventListener('touchstart', correct_startHandler);
-            overlay.addEventListener('touchend', correct_endHandler);
-
-            gameContainer.appendChild(button);
-            gameContainer.appendChild(overlay);
-            resetInactivityTimer();  // Start the inactivity timer after config is fetched
-        }, 1000);  // 1000 milliseconds = 1 seconds
-
-
-    }
-
-    // Game start here
-
-    // Add click event to start game
-    banana.addEventListener('mousedown', startGame);
-    banana.addEventListener('touchstart', startGame);
+    gameContainer.appendChild(button);
+    gameContainer.appendChild(overlay);
     
 });

@@ -60,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'PrimatesGame.urls'
@@ -89,11 +90,11 @@ WSGI_APPLICATION = 'PrimatesGame.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'PrimatesGameDB',
-        'HOST' : '127.0.0.1',
+        'NAME': os.environ.get('DB_NAME'),
+        'HOST' : os.environ.get('DB_HOST'),
         'PORT' : '3306',
-        'USER' : 'admingame',
-        'PASSWORD' : 'game@123!',
+        'USER' : os.environ.get('DB_USER'),
+        'PASSWORD' : os.environ.get('DB_PASS'),
     }
 }
 
@@ -191,3 +192,5 @@ LOGGING = {
         },
     },
 }
+
+STATIC_ROOT = BASE_DIR / "staticfiles"

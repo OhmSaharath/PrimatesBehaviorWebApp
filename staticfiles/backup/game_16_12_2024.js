@@ -8,15 +8,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const reportUrlTemplate = gameContainer.getAttribute('report-update-url');
     const gameInstanceId = getGameInstanceIdFromURL();
     
-
     const button = document.createElement('button');
     let buttonSize = 95;  // Initial size percentage of the button
     const minButtonSizePx = 50;  // Minimum button size in pixels (0.5 cm = 50 pixels)
     const minClickAreaPx = 200;  // Minimum click area size in pixels (2 cm = 200 pixels), special case when button is less than 2cmx2cm
     
     button.style.position = 'absolute';  // Allow positioning the button absolutely
-
-
 
     // Create an overlay for handling the special click area
     const overlay = document.createElement('div');
@@ -27,18 +24,18 @@ document.addEventListener("DOMContentLoaded", function() {
     updateButtonSize(buttonSize); // initialize button
 
 
-    //let config = {
-    //    interval_correct: 2,  // Default wait time for correct click
-    //    interval_incorrect: 5,  // Default wait time for incorrect click
-    //    interval_absent: 60  // Default wait time for absent click
-    //};
+    let config = {
+        interval_correct: 2,  // Default wait time for correct click
+        interval_incorrect: 5,  // Default wait time for incorrect click
+        interval_absent: 60  // Default wait time for absent click
+    };
 
     
     let inactivityTimer = null; // Variable to convert state of inactivity back to original
     let actionBlocked = false;   // Flag to track if actions are blocked
     let Trials = 0;  // Global variable to count trials
     let Last10trialResults = [];  // Array to store results of last 10 trials
-    let config = null;
+
 
     // Fetch game configuration
     const configUrl = configUrlTemplate.replace('0', gameInstanceId);
@@ -46,94 +43,64 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
             if (data) {
-                console.log(data);
                 config = data;
             }
+            resetInactivityTimer();  // Start the inactivity timer after config is fetched
         })
         .catch(error => console.error('Error fetching config:', error));
     
-    console.log(config);
 
     // Get the audio elements
     const correctSound = document.getElementById('correct-sound');
     const incorrectSound = document.getElementById('incorrect-sound');
+    
+    // buttonclick -> Green
+    button.onclick = function(event) {
+        if (actionBlocked) return;  // Prevent action if blocked
+        console.log('correct')
+        event.stopPropagation();  // Prevent the background click event from firing
 
-    const banana = document.getElementById('banana-image');
+        // update button
+        updateButtonColorAndTrials('green'); 
 
-    // Banana picture initialization
-    banana.alt = 'Click to start';
-    banana.style.position = 'absolute';
-    // Set width to 50% of the screen width and height to auto to maintain aspect ratio
-    banana.style.width = '30%';
-    banana.style.height = 'auto';
-    // Center the banana image on the screen
-    banana.style.left = '50%';
-    banana.style.top = '50%';
-    banana.style.transform = 'translate(-50%, -50%)';
-    banana.style.cursor = 'pointer';
+        // populate reports
+        updateReport(gameInstanceId, 'correct', Trials)
 
-    // Initialize a variable to track touch duration
-    let touchStartTime = null;
-    let accumulatedDuration = 0;
-    let durationCheckInterval = null; // Interval for checking accumulated duration
-    
-    // Correct case. Shared event handlers for touch and mouse
-    const correct_startHandler = (event) => {
-        event.preventDefault(); // Prevent default behavior
-        event.stopPropagation(); // Prevent event from propagating to other elements
-        touchStartTime = Date.now();
+        // Activate the pump
+        sendSignal(gameInstanceId); // Call the function to send signal
 
-        // Change the button color to orange while pressing
-        button.style.backgroundColor = 'orange';
-    
-        // Start checking the duration periodically
-        durationCheckInterval = setInterval(() => {
-            if (!touchStartTime) return; // Skip if there's no active touch
-            const currentTime = Date.now();
-            const touchDuration = currentTime - touchStartTime + accumulatedDuration;
-    
-            console.log(`Checking Duration: ${touchDuration}ms`);
-    
-            // If duration meets the requirement, trigger correct state
-            if (touchDuration >= config.button_holdDuration) {
-                console.log('Hold duration met, triggering correct state');
-                updateButtonColorAndTrials('green');
-                updateReport(gameInstanceId, 'correct', Trials);
-                sendSignal(gameInstanceId);
-    
-                accumulatedDuration = 0;
-                touchStartTime = null; // Reset touch start time
-                clearInterval(durationCheckInterval); // Stop checking
-    
-                // Reset after correct state
-                setTimeout(() => {
-                    button.style.backgroundColor = 'yellow';
-                    actionBlocked = false;
-                    resetInactivityTimer();
-                }, config.interval_correct * 1000);
-            }
-        }, 100); // Check every 100ms (adjust as needed)
+        // wait for "interval_correct" second then convert back to yellow
+        console.log('waitfor'+config.interval_correct+'second')
+        setTimeout(() => {
+            button.style.backgroundColor = 'yellow';
+            actionBlocked = false;  // Allow actions again after button reverts to yellow
+            resetInactivityTimer();  // Start the inactivity timer after config is fetched
+        }, config.interval_correct * 1000);  // Convert seconds to milliseconds
     };
-    
-    const correct_endHandler = (event) => {
-    event.preventDefault(); // Prevent default behavior
-    event.stopPropagation(); // Prevent event from propagating to other elements
-    if (touchStartTime) {
-        const touchEndTime = Date.now();
-        accumulatedDuration += touchEndTime - touchStartTime;
-        console.log(`Touch ended. Accumulated Duration: ${accumulatedDuration}ms`);
-        touchStartTime = null;
-        // Change the button color back to yellow after releasing
-        button.style.backgroundColor = 'yellow';
-    }
 
-    // Clear the duration checking interval
-    clearInterval(durationCheckInterval);
+    // Special case, tolerance window -> Green
+    overlay.onclick = function(event) {
+        if (actionBlocked) return;  // Prevent action if blocked
+        event.stopPropagation();  // Prevent the background click event from firing
+
+        // update button
+        updateButtonColorAndTrials('green');
+
+        // populate reports
+        updateReport(gameInstanceId, 'correct', Trials)
+
+        // Activate the pump
+        sendSignal(gameInstanceId); // Call the function to send signal
+
+        setTimeout(() => {
+            button.style.backgroundColor = 'yellow';
+            actionBlocked = false;  // Allow actions again after button reverts to yellow
+            resetInactivityTimer();  // Reset inactivity timer after button reverts to yellow
+        }, config.interval_correct * 1000);  // Convert seconds to milliseconds
     };
 
     // Incorrect case, background click -> Red
-    const incorrect_Handler = (event) => {
-        event.preventDefault(); // Prevent default behavior
+    document.body.onclick = function() {
         if (actionBlocked) return;  // Prevent action if blocked
         console.log('incorrect')
 
@@ -145,9 +112,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
         console.log('waitfor'+config.interval_incorrect+'second')
 
-        // reset previos accumulated duration
-        accumulatedDuration = 0;
-
 
         // wait for "interval_incorrect" second then convert back to yellow
         setTimeout(() => {
@@ -155,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function() {
             actionBlocked = false;  // Allow actions again after button reverts to yellow
             resetInactivityTimer();  // Start the inactivity timer after config is fetched
         }, config.interval_incorrect * 1000);  // Convert seconds to milliseconds
-    }
+    };
 
     function updateButtonColorAndTrials(color) {
         button.style.backgroundColor = color;
@@ -207,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function updateButtonBasedOnPerformance() {
         if (Last10trialResults.length === 10) {
-            const bscale = 0.5; 
+            const bsize = 0.5; 
             const correctResponses = Last10trialResults.filter(result => result).length;
             const correctRate = correctResponses / Last10trialResults.length;
             console.log("correct rate "+ correctRate)
@@ -215,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 console.log('Correct rate more than 80%, reducing the size of rectangle by 90%');
 
                 
-                randomizeButtonPositionandUpdateSize(bscale);
+                randomizeButtonPositionandUpdateSize(bsize);
                 // Reset the Last10trialResults array for the next 10 trials
                 Last10trialResults = [];
 
@@ -231,28 +195,26 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateButtonSize(sizePercentage) {
         const containerWidth = gameContainer.clientWidth;
         const containerHeight = gameContainer.clientHeight;
-    
-        // Calculate the smaller dimension of the container for a square button
-        const containerMinDimension = Math.min(containerWidth, containerHeight);
-    
-        const newSize = (containerMinDimension * sizePercentage) / 100;
-    
+        const newWidth = (containerWidth * sizePercentage) / 100;
+        const newHeight = (containerHeight * sizePercentage) / 100;
+
         // Ensure the button does not shrink below the minimum size
-        const finalSize = newSize < minButtonSizePx ? minButtonSizePx : newSize;
+        const finalWidth = newWidth < minButtonSizePx ? minButtonSizePx : newWidth;
+        const finalHeight = newHeight < minButtonSizePx ? minButtonSizePx : newHeight;
 
-        button.style.width = `${finalSize}px`;
-        button.style.height = `${finalSize}px`;
+        button.style.width = `${finalWidth}px`;
+        button.style.height = `${finalHeight}px`;
 
-        // Update the overlay size and position for the click area
-        if (finalSize < minClickAreaPx) {
-            const overlaySize = Math.max(minClickAreaPx, finalSize);
+        // Update the overlay size and position
+        if (finalWidth < minClickAreaPx || finalHeight < minClickAreaPx) {
+            const overlaySize = Math.max(minClickAreaPx, Math.max(finalWidth, finalHeight));
             overlay.style.width = `${overlaySize}px`;
             overlay.style.height = `${overlaySize}px`;
-            overlay.style.left = `${parseFloat(button.style.left) + (finalSize - overlaySize) / 2}px`;
-            overlay.style.top = `${parseFloat(button.style.top) + (finalSize - overlaySize) / 2}px`;
+            overlay.style.left = `${parseFloat(button.style.left) + (finalWidth - overlaySize) / 2}px`;
+            overlay.style.top = `${parseFloat(button.style.top) + (finalHeight - overlaySize) / 2}px`;
             overlay.style.pointerEvents = 'auto';  // Enable pointer events
         } else {
-            overlay.style.pointerEvents = 'none';  // Disable pointer events
+            overlay.style.pointerEvents = 'none';  // Disable pointer events in case of button larger than 0.5 x 0.5 cm
             overlay.style.width = '0px';
             overlay.style.height = '0px';
         }
@@ -361,42 +323,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }, config.interval_absent * 1000);
     }
 
-
-    // Function to start the game
-    function startGame() {
-        banana.style.display = 'none'; // Hide banana
-
-        // 1 second delay
-        setTimeout(function() {
-            console.log('This message is displayed after a 1-second delay');
-            // Add event listeners for both touch and mouse events for incorrect state
-            document.body.addEventListener('mousedown', incorrect_Handler);
-            document.body.addEventListener('touchstart', incorrect_Handler);
-
-            // Add event listeners for both touch and mouse events
-            button.addEventListener('mousedown', correct_startHandler);
-            button.addEventListener('mouseup', correct_endHandler);
-            button.addEventListener('touchstart', correct_startHandler);
-            button.addEventListener('touchend', correct_endHandler);
-
-            // Special case, tolerance window -> Green
-            overlay.addEventListener('mousedown', correct_startHandler);
-            overlay.addEventListener('mouseup', correct_endHandler);
-            overlay.addEventListener('touchstart', correct_startHandler);
-            overlay.addEventListener('touchend', correct_endHandler);
-
-            gameContainer.appendChild(button);
-            gameContainer.appendChild(overlay);
-            resetInactivityTimer();  // Start the inactivity timer after config is fetched
-        }, 1000);  // 1000 milliseconds = 1 seconds
-
-
-    }
-
-    // Game start here
-
-    // Add click event to start game
-    banana.addEventListener('mousedown', startGame);
-    banana.addEventListener('touchstart', startGame);
+    gameContainer.appendChild(button);
+    gameContainer.appendChild(overlay);
     
 });
