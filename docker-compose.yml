@@ -7,32 +7,45 @@ services:
     container_name: python_app
     volumes:
       - .:/app  # Mount โค้ดปัจจุบันเข้าไปใน container ทำให้แก้โค้ดแล้วเห็นผลทันที
-    ports:
-      - "8000:8000"  # Map port 8000 ของเครื่องเราเข้ากับ port 8000 ของ container
+      - static_volume:/app/staticfiles  # << เพิ่ม: แชร์ static volume
+    # ports:
+      # - "8000:8000"  # Map port 8000 ของเครื่องเราเข้ากับ port 8000 ของ container
     environment:
       # Environment Variables สำหรับให้แอปของคุณเชื่อมต่อกับ DB และ Redis
       - DB_HOST=db
-      - DB_NAME=PrimatesGameDB
-      - DB_USER=admingame
-      - DB_PASS=game@123!
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
       - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      - REDIS_PORT=${REDIS_PORT}
     depends_on:
       - db      # สั่งให้รัน service 'db' และ 'redis' ให้พร้อมก่อน 'app'
       - redis
+
+  nginx:
+    build: ./nginx  # สั่งให้ build จาก Dockerfile ในโฟลเดอร์ nginx
+    container_name: nginx_server
+    volumes:
+      - static_volume:/app/staticfiles  # << เพิ่ม: แชร์ static volume
+    ports:
+      - "80:80"      # << เพิ่ม: เปิด port 80 ให้ผู้ใช้เข้าถึงเว็บผ่าน Nginx
+    depends_on:
+      - app          # << เพิ่ม: สั่งให้ Nginx รอจนกว่า app จะพร้อม
 
   # 2. Database Service (MySQL)
   db:
     image: mysql:8.0  # ใช้ Official MySQL Image
     container_name: mysql_db
+    ports:
+      - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql  # ใช้ Named Volume เพื่อเก็บข้อมูล database อย่างถาวร
     environment:
       # Environment Variables สำหรับสร้าง Database และ User ใน MySQL
-      MYSQL_ROOT_PASSWORD: admin # รหัสผ่านสำหรับ root ของ MySQL
-      MYSQL_DATABASE: PrimatesGameDB
-      MYSQL_USER: admingame
-      MYSQL_PASSWORD: game@123!
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
     restart: always
 
   # 3. Redis Service
@@ -44,3 +57,4 @@ services:
 # ประกาศ Named Volume สำหรับเก็บข้อมูลของ MySQL
 volumes:
   db_data:
+  static_volume:  # << เพิ่ม: volume สำหรับเก็บ static files
