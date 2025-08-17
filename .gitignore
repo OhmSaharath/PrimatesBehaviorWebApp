@@ -10,3 +10,6 @@ db.sqlite3
 .env
 .venv/
 venv/
+
+# SQL
+backup

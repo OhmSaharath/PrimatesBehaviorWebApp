@@ -43,6 +43,7 @@ services:
     environment:
       # Environment Variables สำหรับสร้าง Database และ User ใน MySQL
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_HOST: "%"
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
